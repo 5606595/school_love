@@ -14,7 +14,6 @@ $('button').click(function(eve) {
             if(res === 'false') {
                 alert('用户不存在')
             } else {
-                alert('登录成功');
                 location.href = '/'
             }
         }

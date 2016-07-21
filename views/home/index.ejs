@@ -1,7 +1,10 @@
 <% include ../head %>
 <body>
     <p>
-        当前在线人数: <%=peopleNum%>
+        当前在线人数:
+    </p>
+    <p id="peopleNum">
+
     </p>
     <%if(isLogin) {%>
         <p>欢迎</p>
@@ -15,10 +18,27 @@
     <p>
         在线用户:
     </p>
-    <%for(var i in people) {%>
-        <p><%=people[i]%></p>
-    <%}%>
+    <div id="people">
+
+    </div>
     <script src="js/jquery-3.1.0.min.js"></script>
     <script src="js/home/home.js"></script>
+    <script src="js/socket.io.js"></script>
+    <script>
+        var isLogin = '<%=isLogin%>';
+        var name = '<%=name%>'
+        var socket = io();
+        if(isLogin === 'true') {
+            socket.emit('login', name);
+        }
+        socket.on('people', function(people, peopleNum) {
+            $("#peopleNum").text(peopleNum);
+            var peopleHtml = "";
+            people.map(function(temp) {
+                peopleHtml += "<p>" + temp + "</p>"
+            })
+            $("#people").html(peopleHtml)
+        })
+    </script>
 </body>
 <% include ../foot %>
