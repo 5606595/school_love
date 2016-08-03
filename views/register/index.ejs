@@ -5,7 +5,19 @@
     <title>注册</title>
 </head>
 <body>
-<form action="/register" method="get">
+<form action="/register" method="post">
+    <div>
+        <label for="username">
+            用户名
+        </label>
+        <input type="text" name="username" id="username">
+    </div>
+    <div>
+        <label for="password">
+            密码
+        </label>
+        <input type="password" name="password" id="password">
+    </div>
     <div>
         <label for="name">
             姓名
@@ -18,9 +30,27 @@
         </label>
         <input type="text" name="age" id="age">
     </div>
+    <div id="sex">
+        <label for="">
+            性别
+        </label>
+        <input type="radio" name="sex" value="1" id="man">
+        <label for="man">
+            男
+        </label>
+        <input type="radio" name="sex" value="0" id="girl">
+        <label for="girl">
+            女
+        </label>
+    </div>
+    <div>
+        <input type="file" name="fileImg">
+    </div>
     <button>
         注册
     </button>
 </form>
 </body>
+<script src="js/jquery-3.1.0.min.js"></script>
+<script src="js/register/register.js"></script>
 </html>

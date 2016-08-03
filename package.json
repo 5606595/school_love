@@ -17,11 +17,13 @@
   },
   "homepage": "https://github.com/5606595/school_love#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "express-session": "^1.14.0",
     "mongoose": "^4.5.4",
+    "multer": "^1.1.0",
     "socket.io": "^1.4.8"
   }
 }
