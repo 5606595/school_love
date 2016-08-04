@@ -8,7 +8,9 @@ var express = require('express'),
     man = [], girl = [], man_socket = [], girl_socket = [], waited = [],
     AVLTree = require('./avl'),
     fs = require('fs'),
-    multer = require('multer');
+    multer = require('multer'),
+    crypto = require('crypto'),
+    sha1 = crypto.createHash('sha1');
     // upload =
 
 var peopleNum = 0, people = {};
@@ -261,6 +263,28 @@ io.on('connection', (socket) => {
             delete people[socket.name];
         }
     })
+})
+
+app.get('/token', (req, res) => {
+    var signature = req.query.signature;
+    var string = "";
+    var obj = {
+        token: 'xw1996721222',
+        timestamp: req.query.timestamp,
+        nonce: req.query.nonce
+    }
+    var arr = Object.keys(obj)
+    arr.sort();
+    arr.map((temp) => {
+        string += obj[temp];
+    });
+    sha1.update(string);
+    var hex = sha1.digest('hex');
+    if(signature === hex) {
+        res.send(req.query.echostr);
+    } else {
+        res.send('fail')
+    }
 })
 
 http.listen(80, function() {
