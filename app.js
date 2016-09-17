@@ -1,267 +1,100 @@
 "use strict";
 var express = require('express'),
     app = express(),
-    mongoose = require('mongoose'),
-    http = require('http').Server(app),
-    io = require('socket.io')(http),
-    Schema = require('./schema'),
     man = [], girl = [], man_socket = [], girl_socket = [], waited = [],
     AVLTree = require('./avl'),
-    fs = require('fs'),
+    http = require('http').createServer(app),
     multer = require('multer'),
     crypto = require('crypto'),
-    sha1 = crypto.createHash('sha1');
+    sha1 = crypto.createHash('sha1'),
+    request = require('request'),
+    parseString = require('xml2js').parseString,
+    xml2js = require('xml2js'),
+    builder = new xml2js.Builder(),
+    token = "";
+
     // upload =
 
-var peopleNum = 0, people = {};
-app.set("view engine", "ejs");
+getToken();
+
+var peopleNum = 0, people = [], relation = {}, peopleAll = {};
+
+var manList = [], girlList = [];
 
 
-// app.use(require('body-parser').urlencoded({ extended: false }));
-app.use(require('cookie-parser')('secret'));
-app.use(require('express-session')());
 
-app.use(express.static('public'));
+function getToken() {
+	var option = {
+		url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx975cab4041fab87d&secret=08077c0f76eeec4184d8bd05e958689e'
+	}
+	request(option, (err, res1, body) => {
+		if(err) {
+			console.log(err)
+		} 
+		token = JSON.parse(body).access_token;
+        global.setTimeout(getToken, 7200000);
+    })
+}
 
-app.get('/', (req, res) => {
-    var isLogin = false;
-    if(req.session.userName) {
-        isLogin = true;
+function checkMatch() {
+    for(var i in relation) {
+        if(relation[i].endTime < Date.now()) {
+            send(relation[i].person, "匹配时间结束");
+            delete relation[i]
+        }
     }
-    // Online.find({}, (err, onlinePeos) => {
-    //     peopleNum = onlinePeos.length;
-    //     people = [];
-    //     onlinePeos.map((temp) => {
-    //         people.push(temp.name)
-    //     })
-    res.render('home/index', {
-        isLogin: isLogin,
-        name: req.session.userName
-        // peopleNum: peopleNum,
-        // people: people
-    });
-    // });
-});
+}
 
-app.get('/registerPage', (req, res) => {
-    res.render('register/index')
+global.setInterval(checkMatch, 10000);
+
+var urlencodedParser = require('body-parser').urlencoded({ extended: false })
+
+app.get('/create', (req, res) => {
+     var opts = {
+         url: 'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=' + token,
+         method: 'POST',
+         headers: {
+             "Content-Type": 'application/x-www-form-urlencoded'
+         },
+         json: {
+             "button": [
+             {
+                 "type": 'click',
+                 "name": '在线匹配',
+                 "key": 'match'
+             }
+             ]
+         }
+     }
+     request(opts, (err, res2, body) => {
+         if(err) {
+             console.log(err)
+         }
+         console.log(body)
+         res.send('ok')
+	})
 })
 
-app.post('/register', multer({
-    storage: multer.diskStorage({
-        destination: (req, res, cb) => {
-            cb(null, __dirname + '/uploads')
+app.get('/createkf', (req, res) => {
+    console.log(token)
+    var opts = {
+        url: 'https://api.weixin.qq.com/customservice/kfaccount/add?access_token=' + token,
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
         },
-        filename: (req, res, cb) => {
-            cb(null, req.body.username + Date.now())
+        json: {
+            "kf_account" : "test1",
+            "nickname" : "客服1",
+            "password" : "xiawei"
         }
-    })
-}).single('fileImg'), (req, res) => {
-    // var storage = multer.diskStorage({
-    //     destination: (req, res, cb) => {
-    //         cb(null, __dirname + '/uploads')
-    //     },
-    //     filename: (req, res, cb) => {
-    //         cb(null, Date.now())
-    //     }
-    // }),
-    // upload = multer({
-    //     storage: storage
-    // });
-    // console.log(req.body)
-    // var name = req.query.name
-    // Schema.Info.find({
-    //     username: req.query.username
-    // }, (err, infos) => {
-    //     if(infos.length) {
-    //         res.send('exists');
-    //     } else {
-    //         new Schema.Info({
-    //             id: Math.floor(Math.random() * 100000000000),
-    //             sex: req.query.sex,
-    //             username: req.query.username,
-    //             password: req.query.password,
-    //             name: name,
-    //             age: req.query.age,
-    //             matched: new AVLTree()
-    //         }).save()
-    //         req.session.userName = name;
-    //         res.send('OK');
-    //     }
-    // })
-
-    // peopleNum++;
-    // people.push(name);
-    // new Online({
-    //     name: name
-    // }).save()
-});
-
-app.get('/loginPage', (req, res) => {
-    res.render('login/index');
-})
-
-app.get('/login', (req, res) => {
-    var name = req.query.name
-    console.log(name)
-    Schema.Info.find({
-        name: name
-    }, function(err, infos) {
-        console.log(infos)
-        if(infos.length) {
-            req.session.userName = name;
-            // peopleNum++;
-            // people.push(req.session.userName);
-            // new Online({
-            //     name: name
-            // }).save()
-            res.send("OK");
-        } else {
-            res.send("false")
+    }
+    request(opts, (err, res2, body) => {
+        if(err) {
+            console.log(err)
         }
-    })
-})
-
-app.get('/logout', (req, res) => {
-    var name = req.session.userName;
-    // Schema.Online.remove({
-    //     name: name
-    // }, (err, temp) => {})
-    delete req.session.userName;
-    // peopleNum--;
-    // people.splice(0, 1);
-    res.redirect('/');
-})
-
-io.on('connection', (socket) => {
-    console.log('a new user connected')
-    io.emit('people', Object.keys(people), peopleNum);
-    socket.on('login', (name) => {
-        if(!people[name]) {
-            Schema.Info.find({
-                name: name
-            }, (err, infos) => {
-                socket.id = infos[0].id
-                socket.sex = infos[0].sex
-                socket.matched = infos[0].matched
-            });
-            socket.name = name;
-            people[name] = 1;
-            peopleNum++;
-            io.emit('people', Object.keys(people), peopleNum);
-            console.log('login ' + name);
-        }
-    })
-    socket.on('match', function() {
-        if(socket.sex > 0) {
-            if(man.length < 5) {
-                var flag = 1;
-                girl.map((temp) => {
-                    if(socket.matched.findEle(temp) === 1) {
-                        flag = 0
-                    }
-                })
-                if(flag) {
-                    man.push(socket.user_id);
-                    man_socket.push(socket);
-                } else {
-                    waited.push(socket);
-                }
-            } else {
-                waited.push(socket);
-            }
-        } else {
-            if(girl.length < 5) {
-                man.map((temp) => {
-                    if(socket.matched.findEle(temp) === 1) {
-                        flag = 0
-                    }
-                })
-                if(flag) {
-                    girl.push(socket.user_id);
-                    girl_socket.push(socket);
-                } else {
-                    waited.push(socket);
-                }
-            } else {
-                waited.push(socket);
-            }
-        }
-        if(man.length === 5 && girl.length === 5) {
-            man_socket.map(function(man) {
-                girl.map((temp) => {
-                    man.matched.insertNode(man.matched.tree, temp)
-                })
-                Schema.Info.find({
-                    id: man.id
-                }, (err, temp) => {
-                    temp.matched = man.matched;
-                    temp.save();
-                })
-                man.emit('finish', girl[0], girl[1], girl[2], girl[3], girl[4]);
-            });
-            girl_socket.map(function(girl) {
-                man.map((temp) => {
-                    girl.matched.insertNode(girl.matched.tree, temp)
-                })
-                Schema.Info.find({
-                    id: girl.id
-                }, (err, temp) => {
-                    temp.matched = girl.matched;
-                    temp.save();
-                })
-                girl.emit('finish', man[0], man[1], man[2], man[3], man[4]);
-            });
-            man = [];
-            girl = [];
-            man_socket = [];
-            girl_socket = [];
-            for(var i = 0,j = waited.length; i < j; i++) {
-                var temp = waited.shift();
-                if(temp.sex > 0) {
-                    if(man.length < 5) {
-                        var flag = 1;
-                        girl.map((temp1) => {
-                            if(temp.matched.findEle(temp1) === 1) {
-                                flag = 0
-                            }
-                        })
-                        if(flag) {
-                            man.push(temp.user_id);
-                            man_socket.push(temp);
-                        } else {
-                            waited.push(temp);
-                        }
-                    } else {
-                        waited.push(temp);
-                    }
-                } else {
-                    if(girl.length < 5) {
-                        man.map((temp1) => {
-                            if(temp.matched.findEle(temp1) === 1) {
-                                flag = 0
-                            }
-                        })
-                        if(flag) {
-                            girl.push(temp.user_id);
-                            girl_socket.push(temp);
-                        } else {
-                            waited.push(temp);
-                        }
-                    } else {
-                        waited.push(temp);
-                    }
-                }
-            }
-            console.log('finish')
-        }
-    })
-    socket.on('disconnect', () => {
-        if(socket.name) {
-            console.log(socket.name + 'disconnected')
-            peopleNum--;
-            delete people[socket.name];
-        }
+        console.log(body)
+        res.send('ok')
     })
 })
 
@@ -285,6 +118,113 @@ app.get('/token', (req, res) => {
     } else {
         res.send('fail')
     }
+})
+
+app.post('/token', urlencodedParser, (req, res) => {
+    //parseString(req.body, (err, result) => {
+    //    console.log(result)
+    //    res.send('success')
+    //})
+    var str = "";
+    req.on('data', (chunk) => {
+        str += chunk
+    })
+    req.on('end', (chunk) => {
+        parseString(str, (err, result) => {
+            console.log(result)
+            result = result.xml;
+            if(result.MsgType[0] === 'text') {
+                if(relation[result.FromUserName[0]]) {
+                    send(relation[result.FromUserName[0]].person, result.Content[0])
+                    res.send('success')
+                } else {
+                    var msg = {
+                        xml: {
+                            ToUserName: result.FromUserName,
+                            FromUserName: result.ToUserName,
+                            CreateTime: [String(+new Date())],
+                            MsgType: ['text'],
+                            Content: ['您未有匹配的ID']
+                        }
+                    }
+                    var xml = builder.buildObject(msg);
+                    res.send(xml)
+            }
+            if(result.MsgType[0] === 'event') {
+                if(result.EventKey[0] === 'match') {
+                    var msg = {
+                        xml: {
+                            ToUserName: result.FromUserName,
+                            FromUserName: result.ToUserName,
+                            CreateTime: [String(+new Date())],
+                            MsgType: ['text'],
+                            Content: ['正在为您匹配中,请稍等......']
+                        }
+                    }
+                    var xml = builder.buildObject(msg);
+                    match(result.FromUserName[0]);
+                    res.send(xml);
+                }
+            }
+        })
+    })
+})
+
+
+function match(id) {
+    if(!peopleAll[id]) { 
+        peopleAll[id] = {
+            matched: new AVLTree()
+        }
+    }
+    if(people.length === 1) {
+        if(peopleAll[people[0]].matched.findEle(id)) {
+            waited.push(id);
+        } else {
+            people.push(id);
+        }
+    }
+    if(people.length === 2) {
+        people.map((person) => {
+            send(person,  "已为您匹配到用户,请发消息给公众号");
+        })
+        relation[people[0]] = {
+            person: people[1],
+            endTime: Date.now() + 60 * 1000 
+        }
+        relation[people[1]] = {
+            person: people[0],
+            endTime: Date.now() + 60 * 1000 
+        }
+        peopleAll[people[0]].matched.insertNode(peopleAll[people[0]].matched.tree, id);
+        peopleAll[id].matched.insertNode(people[id].matched.tree, people[0]);
+        people = [];
+       // if(waited) {
+            
+    }
+}
+
+function send(to, msg) {
+    var opts = {
+        url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'Application/x-www-form-urlencoded'
+        },
+        json: {
+            "touser": to,
+            "msgtype": "text",
+            "text": {
+                "content": msg
+            }
+        }
+    }
+    request(opts, (err, res2, body) => {
+        console.log(body);
+    })
+}
+app.get('/verify', (req, res) => {
+    res.send('Hello')
 })
 
 http.listen(80, function() {
