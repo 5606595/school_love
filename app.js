@@ -1,7 +1,6 @@
 "use strict";
 var express = require('express'),
     app = express(),
-    man = [], girl = [], man_socket = [], girl_socket = [], waited = [],
     AVLTree = require('./avl'),
     http = require('http').createServer(app),
     multer = require('multer'),
@@ -11,17 +10,21 @@ var express = require('express'),
     parseString = require('xml2js').parseString,
     xml2js = require('xml2js'),
     builder = new xml2js.Builder(),
-    token = "";
+    mysql = require('mysql'),
+    token = "",
+    People = require('./match');
 
+var connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'zxc',
+    database: 'zz'
+})
     // upload =
 
 getToken();
 
-var peopleNum = 0, people = [], relation = {}, peopleAll = {};
-
-var manList = [], girlList = [];
-
-
+var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = [];
 
 function getToken() {
 	var option = {
@@ -36,17 +39,6 @@ function getToken() {
     })
 }
 
-function checkMatch() {
-    for(var i in relation) {
-        if(relation[i].endTime < Date.now()) {
-            send(relation[i].person, "匹配时间结束");
-            delete relation[i]
-        }
-    }
-}
-
-global.setInterval(checkMatch, 10000);
-
 var urlencodedParser = require('body-parser').urlencoded({ extended: false })
 
 app.get('/create', (req, res) => {
@@ -59,9 +51,37 @@ app.get('/create', (req, res) => {
          json: {
              "button": [
              {
-                 "type": 'click',
-                 "name": '在线匹配',
-                 "key": 'match'
+                 "name": '菜单',
+                 "sub_button": [
+                 {
+                     "type": "click",
+                     "name": "验证",
+                     "key": "verify"
+                 },
+                 {
+                     "type": "click",
+                     "name": "匹配",
+                     "key": "match"
+                 },
+                 {
+                     "type": "click",
+                     "name": "换人",
+                     "key": "change"
+                 }]
+             },
+             {
+                 "name": "页面",
+                 "sub_button": [
+                 {
+                     "type": "click",
+                     "name": "查看资料",
+                     "key": "watch"
+                 },
+                 {
+                     "type": "view",
+                     "name": "注册",
+                     "url": "http://www.baidu.com"
+                 }]
              }
              ]
          }
@@ -73,29 +93,6 @@ app.get('/create', (req, res) => {
          console.log(body)
          res.send('ok')
 	})
-})
-
-app.get('/createkf', (req, res) => {
-    console.log(token)
-    var opts = {
-        url: 'https://api.weixin.qq.com/customservice/kfaccount/add?access_token=' + token,
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        json: {
-            "kf_account" : "test1",
-            "nickname" : "客服1",
-            "password" : "xiawei"
-        }
-    }
-    request(opts, (err, res2, body) => {
-        if(err) {
-            console.log(err)
-        }
-        console.log(body)
-        res.send('ok')
-    })
 })
 
 app.get('/token', (req, res) => {
@@ -121,10 +118,6 @@ app.get('/token', (req, res) => {
 })
 
 app.post('/token', urlencodedParser, (req, res) => {
-    //parseString(req.body, (err, result) => {
-    //    console.log(result)
-    //    res.send('success')
-    //})
     var str = "";
     req.on('data', (chunk) => {
         str += chunk
@@ -134,9 +127,54 @@ app.post('/token', urlencodedParser, (req, res) => {
             console.log(result)
             result = result.xml;
             if(result.MsgType[0] === 'text') {
-                if(relation[result.FromUserName[0]]) {
-                    send(relation[result.FromUserName[0]].person, result.Content[0])
+                if(people.match[result.FromUserName[0]]) {
+                    send(people.match[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
+                    return ;
+                } else {
+                   spe.map((data) => {
+                       if(data.match[result.FromUserName[0]].user) {
+                            send(data.match[result.FromUserName[0]].user, result.Content[0])
+                            res.send('success');
+                            return ;
+                       }
+                   })
+                }
+                if(waitVerify[result.FromUserName[0]]) {
+                    var randomCode = result.Content[0]
+                    var querySel = "select * from user where randomcode = " + randomCode;
+                    connection.query(querySel, (err, res1) => {
+                        if(res1.length) {
+                            var msg = {
+                                xml: {
+                                    ToUserName: result.FromUserName,
+                                    FromUserName: result.ToUserName,
+                                    CreateTime: [String(+new Date())],
+                                    MsgType: ['text'],
+                                    Content: ['验证码错误']
+                                }
+                            }
+                            var xml = builder.buildObject(msg);
+                            res.send(xml);
+                            return ;
+                        } else {
+                             var msg = {
+                                xml: {
+                                    ToUserName: result.FromUserName,
+                                    FromUserName: result.ToUserName,
+                                    CreateTime: [String(+new Date())],
+                                    MsgType: ['text'],
+                                    Content: ['验证成功']
+                                }
+                            }
+                            var xml = builder.buildObject(msg);
+                            var querySel = "update user set weichatnum = " result.FromUserName[0] + " where randomcode = " + randomCode;
+                            connection.query(querySel, (err, res2) => {
+                                res.send(xml)
+                                return ;
+                            });
+                        }
+                    })
                 } else {
                     var msg = {
                         xml: {
@@ -149,61 +187,131 @@ app.post('/token', urlencodedParser, (req, res) => {
                     }
                     var xml = builder.buildObject(msg);
                     res.send(xml)
+                    return ;
+                }
             }
             if(result.MsgType[0] === 'event') {
-                if(result.EventKey[0] === 'match') {
+                if(result.EventKey[0] === 'verify') {
+                    var wechatnum = result.FromUserName[0];
+                    if(waitVerify[wechatnum]) {
+                    } else {
+                        var querySel = "select * from user where weichatnum = " + result.FromUserName[0];
+                        connection.query(querySel, (err, res1) => {
+                            if(res1.length && res1[0].randomcode) {
+                                var msg = {
+                                     xml: {
+                                         ToUserName: result.FromUserName,
+                                         FromUserName: result.ToUserName,
+                                         CreateTime: [String(+new Date())],
+                                         MsgType: ['text'],
+                                         Content: ['您已通过验证']
+                                     }
+                                 }
+                                 var xml = builder.buildObject(msg);
+                                 res.send(xml)
+                                 return ;
+                            }
+                        })
+                    }
+                    waitVerify[wechatnum] = true;
                     var msg = {
                         xml: {
                             ToUserName: result.FromUserName,
                             FromUserName: result.ToUserName,
                             CreateTime: [String(+new Date())],
                             MsgType: ['text'],
-                            Content: ['正在为您匹配中,请稍等......']
+                            Content: ['请输入您的验证码']
                         }
                     }
                     var xml = builder.buildObject(msg);
-                    match(result.FromUserName[0]);
                     res.send(xml);
+                    return ;
                 }
-            }
-        })
+                if(result.EventKey[0] === 'match') {
+                    var querySel = "select * from user where weichatnum = " + result.FromUserName[0];
+                    connection.query(querySel, (err, res1) => {
+                        if(!res1.length) {
+                            var msg = {
+                                xml: {
+                                    ToUserName: result.FromUserName,
+                                    FromUserName: result.ToUserName,
+                                    CreateTime: [String(+new Date())],
+                                    MsgType: ['text'],
+                                    Content: ['账号未通过验证']
+                                }
+                            }
+                            var xml = builder.buildObject(msg);
+                            res.send(xml);
+                            return ;
+                        } else {
+                            if(!res1.choseid && people.matchedTime[result.FromUserName[0] && people.matchedTime[result.FromUserName[0] > people.limit) {
+                                var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
+                                res.send(xml);
+                                return ;
+                            } else {
+                                var msg = {
+                                    xml: {
+                                        ToUserName: result.FromUserName,
+                                        FromUserName: result.ToUserName,
+                                        CreateTime: [String(+new Date())],
+                                        MsgType: ['text'],
+                                        Content: ['正在为您匹配中,请稍等......']
+                                    }
+                                }
+                                var xml = builder.buildObject(msg);
+                                if(!res1.choseId) {
+                                    if(res1.gender === 0) {
+                                        people.insertMan(result.FromUserName[0])
+                                    } else {
+                                        people.insertGirl(result.FromUserName[0])
+                                    }
+                                } else {
+                                    var id = res1.choseId;
+                                    if(id > spe.length) {
+                                        spe.length = id;
+                                        spe[id - 1] = new People(1);
+                                    }
+                                    if(res1.gender === 0) {
+                                        spe[id - 1].insertMan(result.FromUserName[0])
+                                    } else {
+                                        spe[id - 1].insertGirl(result.FromUserName[0])
+                                    }
+                                }
+                                res.send(xml);
+                                return ;
+                            }
+                        }
+                    })
+                }
+                if(result.EventKey[0] === 'change') {
+                    if(people.match[result.FromUserName[0] && people.match[result.FromUserName[0]].canChange) {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
+                        var obj = people.match[result.FromUserName[0]].user;
+                        send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
+                        delete people.match[obj];
+                        delete people.match[result.FromUserName[0];
+                        var querySel = 'select * from user where weichatNum = ' + result.FromUserName[0];
+                        connection.query(querySel, (err, res1) => {
+                            if(err) {
+                                console.log(err);
+                            }
+                            if(res1[0].gender === 0) {
+                                people.insertMan(result.FromUserName[0];
+                            } else {
+                                people.insertGirl(result.FromUserName[0];)
+                            res.send(xml);
+                            return ;
+                        });
+                    } else {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件, 换人失败']);
+                        res.send(xml);
+                        return ;
+                    }
+                }
+             }
+         })
     })
 })
-
-
-function match(id) {
-    if(!peopleAll[id]) { 
-        peopleAll[id] = {
-            matched: new AVLTree()
-        }
-    }
-    if(people.length === 1) {
-        if(peopleAll[people[0]].matched.findEle(id)) {
-            waited.push(id);
-        } else {
-            people.push(id);
-        }
-    }
-    if(people.length === 2) {
-        people.map((person) => {
-            send(person,  "已为您匹配到用户,请发消息给公众号");
-        })
-        relation[people[0]] = {
-            person: people[1],
-            endTime: Date.now() + 60 * 1000 
-        }
-        relation[people[1]] = {
-            person: people[0],
-            endTime: Date.now() + 60 * 1000 
-        }
-        peopleAll[people[0]].matched.insertNode(peopleAll[people[0]].matched.tree, id);
-        peopleAll[id].matched.insertNode(people[id].matched.tree, people[0]);
-        people = [];
-       // if(waited) {
-            
-    }
-}
-
 function send(to, msg) {
     var opts = {
         url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
@@ -223,9 +331,20 @@ function send(to, msg) {
         console.log(body);
     })
 }
-app.get('/verify', (req, res) => {
-    res.send('Hello')
-})
+
+function returnXML(to, from, type, content) {
+    var msg = {
+        xml: {
+            ToUserName: to,
+            FromUserName: from,
+            CreateTime: [String(+new Date())],
+            MsgType: type,
+            Content: content
+        }
+    }
+    var xml = builder.buildObject(msg);
+    return xml;
+}
 
 http.listen(80, function() {
     console.log("Server listening on port 80");
