@@ -11,9 +11,7 @@ var express = require('express'),
     xml2js = require('xml2js'),
     builder = new xml2js.Builder(),
     mysql = require('mysql'),
-    token = "",
-    People = require('./match');
-
+    token = "";
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -25,18 +23,19 @@ var connection = mysql.createConnection({
 getToken();
 
 var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = [];
+people.startInterval();
 
 function getToken() {
 	var option = {
 		url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx975cab4041fab87d&secret=08077c0f76eeec4184d8bd05e958689e'
 	}
 	request(option, (err, res1, body) => {
-		if(err) {
-			console.log(err)
-		} 
-		token = JSON.parse(body).access_token;
-        global.setTimeout(getToken, 7200000);
-    })
+    if(err) {
+        console.log(err)
+    }
+    token = JSON.parse(body).access_token;
+    global.setTimeout(getToken, 7200000);
+})
 }
 
 var urlencodedParser = require('body-parser').urlencoded({ extended: false })
@@ -124,21 +123,25 @@ app.post('/token', urlencodedParser, (req, res) => {
     })
     req.on('end', (chunk) => {
         parseString(str, (err, result) => {
-            console.log(result)
             result = result.xml;
             if(result.MsgType[0] === 'text') {
-                if(people.match[result.FromUserName[0]]) {
-                    send(people.match[result.FromUserName[0]].user, result.Content[0])
+                if(people.matchList[result.FromUserName[0]]) {
+                    send(people.matchList[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
                     return ;
                 } else {
-                   spe.map((data) => {
-                       if(data.match[result.FromUserName[0]].user) {
-                            send(data.match[result.FromUserName[0]].user, result.Content[0])
-                            res.send('success');
-                            return ;
-                       }
+                   var has = spe.some((data) => {
+                       return data.matchList[result.FromUserName[0]].user
                    })
+                   if(has) {
+                       spe.map((data) => {
+                           if (data.matchList[result.FromUserName[0]].user) {
+                               send(data.matchList[result.FromUserName[0]].user, result.Content[0])
+                               res.send('success');
+                           }
+                       })
+                       return ;
+                   }
                 }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
@@ -156,7 +159,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                             var xml = builder.buildObject(msg);
                             res.send(xml);
-                            return ;
                         } else {
                              var msg = {
                                 xml: {
@@ -168,10 +170,9 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 }
                             }
                             var xml = builder.buildObject(msg);
-                            var querySel = "update user set weichatnum = " result.FromUserName[0] + " where randomcode = " + randomCode;
+                            var querySel = "update user set weichatnum = " + result.FromUserName[0] + " where randomcode = " + randomCode;
                             connection.query(querySel, (err, res2) => {
                                 res.send(xml)
-                                return ;
                             });
                         }
                     })
@@ -209,9 +210,9 @@ app.post('/token', urlencodedParser, (req, res) => {
                                  }
                                  var xml = builder.buildObject(msg);
                                  res.send(xml)
-                                 return ;
                             }
                         })
+                        return ;
                     }
                     waitVerify[wechatnum] = true;
                     var msg = {
@@ -242,9 +243,8 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                             var xml = builder.buildObject(msg);
                             res.send(xml);
-                            return ;
                         } else {
-                            if(!res1.choseid && people.matchedTime[result.FromUserName[0] && people.matchedTime[result.FromUserName[0] > people.limit) {
+                            if(!res1.choseid && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
                                 res.send(xml);
                                 return ;
@@ -270,6 +270,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     if(id > spe.length) {
                                         spe.length = id;
                                         spe[id - 1] = new People(1);
+                                        spe[id - 1].startInterval();
                                     }
                                     if(res1.gender === 0) {
                                         spe[id - 1].insertMan(result.FromUserName[0])
@@ -284,21 +285,22 @@ app.post('/token', urlencodedParser, (req, res) => {
                     })
                 }
                 if(result.EventKey[0] === 'change') {
-                    if(people.match[result.FromUserName[0] && people.match[result.FromUserName[0]].canChange) {
+                    if(people.matchList[result.FromUserName[0]] && people.matchList[result.FromUserName[0]].canChange) {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
-                        var obj = people.match[result.FromUserName[0]].user;
+                        var obj = people.matchList[result.FromUserName[0]].user;
                         send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
-                        delete people.match[obj];
-                        delete people.match[result.FromUserName[0];
+                        delete people.matchList[obj];
+                        delete people.matchList[result.FromUserName[0]];
                         var querySel = 'select * from user where weichatNum = ' + result.FromUserName[0];
                         connection.query(querySel, (err, res1) => {
                             if(err) {
                                 console.log(err);
                             }
                             if(res1[0].gender === 0) {
-                                people.insertMan(result.FromUserName[0];
+                                people.insertMan(result.FromUserName[0]);
                             } else {
-                                people.insertGirl(result.FromUserName[0];)
+                                people.insertGirl(result.FromUserName[0]);
+                            }
                             res.send(xml);
                             return ;
                         });
@@ -345,7 +347,162 @@ function returnXML(to, from, type, content) {
     var xml = builder.buildObject(msg);
     return xml;
 }
+class People {
+    constructor(status) {
+        this.man1 = [];
+        this.man2 = [];
+        this.girl1 = [];
+        this.girl2 = [];
+        this.flag = 0;
+        this.matched = {};
+        this.matchList = {};
+        this.status = status;
+        if(status === 0) {
+            this.limit = 3;
+            this.matchedTimes = {};
+        }
+    }
+    matchCheck() {
+        if(this.flag === 0) {
+            this.man1.map((dataMan, i) => {
+                this.girl1.map((dataGirl, j) => {
+                    if(this.matched[dataMan] && this.matched[dataMan].findEle(dataGirl)) {
 
-http.listen(80, function() {
+                    } else {
+                        this.match(dataMan, dataGirl);
+                        dataMan = "";
+                        dataGirl = "";
+                    }
+                })
+            })
+            var i = 0, j = 0;
+            this.man1.map((dataMan) => {
+                if(dataMan) {
+                    this.man2[i] = dataMan;
+                    i++;
+                }
+            })
+            this.girl1.map((dataGirl) => {
+                if(dataGirl) {
+                    this.girl2[j] = dataGirl;
+                }
+            });
+            this.man1 = [];
+            this.girl1 = [];
+            this.flag = 1;
+        } else {
+            this.man2.map((dataMan, i) => {
+                this.girl2.map((dataGirl, j) => {
+                    if(this.matched[dataMan] && this.matched[dataMan].findEle(dataGirl)) {
+
+                    } else {
+                        this.match(dataMan, dataGirl);
+                        dataMan = "";
+                        dataGirl = "";
+                    }
+                })
+            })
+            var i = 0, j = 0;
+            this.man2.map((dataMan) => {
+                if(dataMan) {
+                    man1[i] = dataMan;
+                    i++;
+                }
+            })
+            this.girl2.map((dataGirl) => {
+                if(dataGirl) {
+                    girl1[j] = dataGirl;
+                }
+            });
+            this.man2 = [];
+            this.girl2 = [];
+            this.flag = 0;
+        }
+    }
+    check() {
+        if(this.status === 0) {
+            for(var i in this.matchList) {
+                if(this.matchList[i].endTime < Date.now()) {
+                    send(this.matchList[i].user, '聊天时间结束')
+                    delete this.matchList[i]
+                }
+                if(this.matchList[i].changeTime < Date.now()) {
+                    this.matchList[i].canChange = true;
+                }
+            }
+        } else {
+            for(var i in this.matchList) {
+                if(this.matchList[i].endTime < Date.now()) {
+                    send(this.matchList[i].user, '聊天时间结束')
+                    delete this.matchList[i]
+                }
+            }
+        }
+    }
+    startInterval() {
+        setInterval(this.matchCheck.bind(this), 20000);
+        setInterval(this.check.bind(this), 20000);
+    }
+    insertMan(id) {
+        if(flag) {
+            this.man2.push(id);
+        } else {
+            this.man1.push(id);
+        }
+    }
+    insertGirl(id) {
+        if(flag) {
+            this.girl2.push(id);
+        } else {
+            this.girl1.push(id);
+        }
+    }
+    match(man, girl) {
+        if(this.matched[man]) {
+            this.matched[man].insertNode(girl);
+        } else {
+            this.matched[man] = new AVLTree();
+            this.matched[man].insertNode(girl);
+        }
+        if(this.status === 0) {
+            this.matchList[man] = {
+                user: girl,
+                changeTime: Date.now() + 3 * 60 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
+                canChange: false
+            }
+            this.matchList[girl] = {
+                user: man,
+                changeTime: Date.now() + 3 * 60 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
+                canChange: false
+            }
+            if(this.matchedTime[man]) {
+                this.matchedTime[man] = 1;
+            } else {
+                this.matchedTime[man]++;
+            }
+            if(this.matchedTime[girl]) {
+                this.matchedTime[girl] = 1;
+            } else {
+                this.matchedTime[girl]++;
+            }
+        } else {
+            this.matchList[man] = {
+                user: girl,
+                endTime: Date.now() + 6 * 60 * 1000
+            }
+            this.matchList[girl] = {
+                user: man,
+                endTime: Date.now() + 6 * 60 * 1000
+            }
+        }
+        send(man, "匹配成功, 现在可以开始聊天了");
+        send(girl, "匹配成功, 现在可以开始聊天了");
+    }
+}
+
+
+http.listen(3000, function() {
     console.log("Server listening on port 80");
 });
