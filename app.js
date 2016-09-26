@@ -504,5 +504,5 @@ function returnXML(to, from, type, content) {
 }
 
 http.listen(3000, function() {
-    console.log("Server listening on port 80");
+    console.log("Server listening on port 3000");
 });
