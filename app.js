@@ -10,7 +10,7 @@ var express = require('express'),
     xml2js = require('xml2js'),
     builder = new xml2js.Builder(),
     mysql = require('mysql'),
-    token = "";
+    token = "", jsapi_ticket = "";
 
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -210,12 +210,18 @@ function getToken() {
 		url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx975cab4041fab87d&secret=08077c0f76eeec4184d8bd05e958689e'
 	}
 	request(option, (err, res1, body) => {
-    if(err) {
-        console.log(err)
-    }
-    token = JSON.parse(body).access_token;
-    global.setTimeout(getToken, 7200000);
-})
+        if(err) {
+            console.log(err)
+        }
+        token = JSON.parse(body).access_token;
+        var opts = {
+            url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi'
+        }
+        request(opts, (err, res1, body) => {
+            jsapi_ticket = JSON.parse(body).ticket;
+            global.setTimeout(getToken, 7200000);
+        });
+    })
 }
 
 var urlencodedParser = require('body-parser').urlencoded({ extended: false })
@@ -587,27 +593,19 @@ function send(to, msg) {
 
 app.get('/sha', (req, res) => {
     var noncestr = 'Wm3WZYTPz0wzccnW';
-    var jsapi_ticket;
     var timestamp = 1414587457;
     var url = 'http://zuizui.club/weixin/upload'
-    var opts = {
-        url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi'
-    }
-    request(opts, (err, res1, body) => {
-        console.log(JSON.parse(body));
-        jsapi_ticket = JSON.parse(body).ticket;
-        var timestamp = +new Date();
-        console.log(jsapi_ticket)
-        console.log(timestamp)
-        var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
-        sha1.update(string);
-        var hex = sha1.digest('hex');
-        console.log(hex)
-        res.send(JSON.stringify({
-            timestamp: timestamp,
-            hex: hex
-        }));
-    })
+    var timestamp = +new Date();
+    console.log(jsapi_ticket)
+    console.log(timestamp)
+    var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
+    sha1.update(string);
+    var hex = sha1.digest('hex');
+    console.log(hex)
+    res.send(JSON.stringify({
+        timestamp: timestamp,
+        hex: hex
+    }));
 })
 
 function returnXML(to, from, type, content) {
