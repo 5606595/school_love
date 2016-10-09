@@ -597,9 +597,12 @@ app.get('/sha', (req, res) => {
         console.log(JSON.parse(body));
         jsapi_ticket = JSON.parse(body).ticket;
         var timestamp = +new Date();
+        console.log(jsapi_ticket)
+        console.log(timestamp)
         var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
         sha1.update(string);
         var hex = sha1.digest('hex');
+        console.log(hex)
         res.send(JSON.stringify({
             timestamp: timestamp,
             hex: hex
