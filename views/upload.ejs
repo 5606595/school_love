@@ -17,7 +17,7 @@
         timestamp: 1414587457, // 必填，生成签名的时间戳
         nonceStr: '1414587457', // 必填，生成签名的随机串
         signature: '7e48bd5a493292dfc9fdcbf2cd57abafa68c52e3',// 必填，签名，见附录1
-        jsApiList: [chooseImage, uploadImage] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+        jsApiList: ['chooseImage', 'uploadImage'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
     });
     wx.ready(function(){
 //        wx.chooseImage({
