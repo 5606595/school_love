@@ -259,7 +259,7 @@ app.get('/create', (req, res) => {
                  {
                      "type": "view",
                      "name": "注册",
-                     "url": "http://www.baidu.com"
+                     "url": "http://zuizui.club/weixin/regist"
                  }]
              }
              ]
@@ -504,6 +504,7 @@ app.post('/getveri', (req, res) => {
     sendMS(String(randomCode), req.body.phoneNum);
     req.session.phoneNum = req.body.phoneNum;
     req.session.regCode = randomCode;
+    console.log(req.session);
     res.send('ok');
 })
 
@@ -534,11 +535,15 @@ app.post('/reg', (req, res) => {
                     if(err) {
                         console.log(err)
                     }
-                    res.redirect('/success');
+                    res.redirect('/weixin/success');
                 })
             }
         }
     })
+})
+
+app.get('/reg', (req, res) => {
+    res.redirect('/weixin/success');
 })
 
 app.get('/success', (req, res) => {
