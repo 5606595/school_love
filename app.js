@@ -12,12 +12,38 @@ var express = require('express'),
     builder = new xml2js.Builder(),
     mysql = require('mysql'),
     token = "";
+
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var TopClient = require('./topClient').TopClient;
+var client = new TopClient({
+    'appkey': '23472001',
+    'appsecret': '65a8de9a0eff2c590f9ba4856dcb3947',
+    'REST_URL': 'http://gw.api.taobao.com/router/rest'
+});
+var formidable = require('formidable');
+
+app.use(session({
+    secret: 'zuizui-lianyi',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 180000
+    }
+}))
+
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'zxc',
     database: 'zz'
 })
+app.set('view engine', 'ejs');
+
+app.use(express.static('public'));
+
+app.use(bodyParser());
+
 
 class People {
     constructor(status) {
@@ -469,6 +495,65 @@ app.post('/token', urlencodedParser, (req, res) => {
          })
     })
 })
+
+app.get('/regist', (req, res) => {
+    res.render('regist');
+})
+
+app.post('/getveri', (req, res) => {
+    var randomCode = Math.floor(Math.random() * 1000000);
+    sendMS(randomCode, req.body.phoneNum);
+    req.session.phoneNum = req.body.phoneNum;
+    req.session.regCode = randomCode;
+    res.send('ok');
+})
+
+app.post('/reg', (req, res) => {
+    var form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    form.uploadDir = "/Users/jorten/github/school_love-Web/public/img/person";
+    form.on('file', (name, file) => {
+        var arr = file.path.split('/');
+        file.name = arr.slice(arr.length - 1, arr.length)[0];
+    })
+    form.maxFieldsSize = 2 * 1024 * 1024;
+    form.parse(req, (err, filed, file) => {
+        req.body = filed;
+        req.file = file;
+        var photo = req.file.photo.name
+        var phoneNum = req.body.phoneNum;
+        var regCode = req.body.regCode;
+        if(phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
+            var code = req.body.code;
+            var name = req.body.name;
+            var gender = req.body.gender;
+            var school = req.body.school;
+            var schema = req.body.schema;
+            if(code && school && schema) {
+                var querySel = "insert into user(phoneNum, password, Name, gender, school, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + photo + "');";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err)
+                    }
+                    res.send('ok')
+                })
+            }
+        }
+    })
+})
+
+
+app.get('/veri', (req, res) => {
+    var phoneNum = req.query.phoneNum;
+    var regCode = req.query.regCode;
+    if(phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
+        res.send('1')
+    } else {
+        res.send('0')
+    }
+})
+
+
 function send(to, msg) {
     var opts = {
         url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
@@ -501,6 +586,30 @@ function returnXML(to, from, type, content) {
     }
     var xml = builder.buildObject(msg);
     return xml;
+}
+
+function sendMS(num, phoneNum) {
+    if(arguments.length === 2) {
+        var sms_param = {
+            code: num,
+            product: "最最注册"
+        }
+        client.execute('alibaba.aliqin.fc.sms.num.send', {
+            'sms_type':'normal',
+            'sms_free_sign_name':'最最联谊',
+            'sms_param': JSON.stringify(sms_param),
+            'rec_num': phoneNum,
+            'sms_template_code':'SMS_16696263'
+        }, function(error, response) {
+            if (!error) {
+                return true;
+            }
+            else {
+                console.log(error);
+                return false;
+            }
+        })
+    }
 }
 
 http.listen(3000, function() {

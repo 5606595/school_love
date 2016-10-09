@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>最最联谊平台注册页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, max-scale=1.0, user-scalable=0;">
+    <style>
+        body{background:#EEE}h2{text-align:center}.container{margin:0 10px;box-sizing:border-box}label{display:block;margin:10px 0}.container>input{height:36px;border-radius:4px;width:100%;border:1px solid #CCC}.phoneCont{display:flex}.phoneCont input{flex:3;height:36px;border:1px solid #CCC}#get{outline:0;height:40px;line-height:40px;flex:2;vertical-align:-2px;border-radius:4px;border:1px solid #CCC;background:#1d8cf9;color:#fff;display:inline-block}.container>.tel{width:65%}.opt{border:1px solid #CCC;border-radius:4px;background:#fff}.opt label{display:inline-block}.opt div:nth-of-type(1){border-bottom:1px solid #EEE}.opt select{height:50px;width:100%;background:url(/img/DownArrow.png) right center no-repeat;font-size:16px;appearance:none;-webkit-appearance:none;-ms-appearance:none;-o-appearance:none;border:none;background-size:auto 13px}.school select:nth-of-type(1){border-bottom:1px solid #CCC}h6{text-align:center;padding:0 20px;font-size:14px}h6 span{color:#AAA;font-size:12px}#tj{border-radius:2px;background:#00a8c6;color:#fff;margin:20px 0;border:1px solid #CCC;width:100%;letter-spacing:3px;text-align:center;display:block;height:40px}.fileCont{height:60px;width:100%;border:1px solid #CCC;background:#fff;display:flex;box-sizing:border-box;border-radius:4px;position:relative;align-items:center;justify-content:center}.file{opacity:0;width:100%;height:100%;position:absolute;top:0;left:0;z-index:20}
+        button[disabled] {
+            background: #999!important;
+        }
+    </style>
+</head>
+<body>
+    <h2>
+        最最联谊平台注册页面
+    </h2>
+    <form action="/reg" method="post" id="sub" enctype="multipart/form-data">
+        <div class="container">
+            <label for="phone">
+                手机号
+            </label>
+            <div class="phoneCont">
+                <input type="tel" class="tel" id="phone" name="phoneNum">
+                <button id="get">
+                    获取验证码
+                </button>
+            </div>
+            <label for="verify">
+                验证码
+            </label>
+            <input type="text" id="verify" name="regCode">
+            <label for="code">
+                密码
+            </label>
+            <input type="password" id="code" name="code">
+            <label for="name">
+                姓名
+            </label>
+            <input type="text" id="name" name="name">
+            <label for="man">
+                性别
+            </label>
+            <div class="opt gender">
+                <div>
+                    <input type="radio" value="0" name="gender" id="man">
+                    <label for="man">
+                        男
+                    </label>
+                </div>
+                <div>
+                    <input type="radio" value="1" name="gender" id="girl">
+                    <label for="" id="girl">
+                        女
+                    </label>
+                </div>
+            </div>
+            <label for="school">
+                学校
+            </label>
+            <div class="opt school">
+                <select name="city" id="school" class="select1">
+                    <option value="">
+                        请选择
+                    </option>
+                    <option value="tj">
+                        天津
+                    </option>
+                </select>
+                <select name="school" id="" class="select2">
+                    <option value="">
+                        请选择
+                    </option>
+                </select>
+            </div>
+            <label for="schema">
+                学历
+            </label>
+            <div class="opt schema">
+                <select name="schema" id="schema" class="select3">
+                    <option value="">
+                        请选择
+                    </option>
+                    <option value="本科">
+                        本科
+                    </option>
+                    <option value="硕士">
+                        硕士
+                    </option>
+                    <option value="博士">
+                        博士
+                    </option>
+                </select>
+            </div>
+            <label for="photo">
+                实名认证
+            </label>
+            <!--<input type="file">-->
+            <div class="fileCont">
+                <input type="file" class="file" id="photo" name="photo">
+                <h6>
+                    选择文件<span>(请手持身份证/一卡通正面照片，露出双肩和面部，要求清晰)</span>
+                </h6>
+            </div>
+            <button id="tj">
+                提交
+            </button>
+        </div>
+    </form>
+</body>
+<script>
+    var index = {
+        tj: ['天津大学', '南开大学']
+    }
+    var btn = document.querySelector("#get");
+    var time = 60;
+    var form = document.querySelector("#sub");
+    var option = "";
+    var select1 = document.querySelector(".select1");
+    var select2 = document.querySelector(".select2");
+    btn.addEventListener("click", function(event) {
+        event.preventDefault();
+        var phoneNum = document.querySelector("#phone").value;
+        if(!(/^1[34578]\d{9}$/.test(phoneNum))){
+            alert('您的手机号码有误,请重新输入')
+        } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/getveri', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send("phoneNum=" + phoneNum);
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 4) {
+                    if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                        btn.setAttribute('disabled', 'disabled');
+                        window.setTimeout(dis, 100);
+                    }
+                }
+            }
+        }
+    }, false);
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if(!document.querySelector("#phone").value || !document.querySelector("#verify").value || !document.querySelector("#code").value || !document.querySelector("#name").value || !document.querySelector(".gender input:checked") || !document.querySelector(".select1").value || !document.querySelector(".select2").value || !document.querySelector(".select3").value || !document.querySelector("#photo").value) {
+            alert('您有未填写信息')
+        } else {
+            var phoneNum = document.querySelector("#phone").value;
+            var regCode = document.querySelector("#verify").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'veri?phoneNum=' + phoneNum + '&regCode=' + regCode, true);
+            xhr.send(null);
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 4) {
+                    if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                        if(xhr.responseText == 0) {
+                            alert('手机号或验证码错误')
+                        } else {
+                            form.submit();
+                        }
+                    }
+                }
+            }
+        }
+    })
+    select1.addEventListener("change", function(event) {
+        var city = event.target.value;
+        if(city) {
+            var arr = index[city];
+            option = "<option value=''>请选择</option>"
+            arr.map(function(opt) {
+                option += "<option value='" + opt + "'>" + opt + "</option>"
+            })
+        } else {
+            option = "<option value=''>请选择</option>"
+        }
+        select2.innerHTML = option;
+    }, false);
+    function dis() {
+        if(time > 0) {
+            btn.textContent = "获取验证码(" + time + "s)";
+            time--;
+            window.setTimeout(dis, 1000);
+        } else {
+            btn.removeAttribute('disabled');
+            btn.textContent = "获取验证码";
+            time = 60;
+        }
+    }
+</script>
+</html>
