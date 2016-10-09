@@ -546,6 +546,10 @@ app.get('/reg', (req, res) => {
     res.redirect('/weixin/success');
 })
 
+app.get('/upload', (req, res) => {
+    res.render('upload')
+})
+
 app.get('/success', (req, res) => {
     res.render('success')
 })
@@ -580,6 +584,25 @@ function send(to, msg) {
         console.log(body);
     })
 }
+
+app.get('/sha', (req, res) => {
+    var noncestr = 'Wm3WZYTPz0wzccnW';
+    var jsapi_ticket;
+    var timestamp = 1414587457;
+    var url = 'http://zuizui.club/weixin/upload'
+    var opts = {
+        url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi'
+    }
+    request(opts, (err, res1, body) => {
+        console.log(JSON.parse(body));
+        jsapi_ticket = JSON.parse(body).ticket;
+        var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
+        sha1.update(string);
+        var hex = sha1.digest('hex');
+        console.log(hex);
+        res.send(hex);
+    })
+})
 
 function returnXML(to, from, type, content) {
     var msg = {
