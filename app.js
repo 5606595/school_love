@@ -599,7 +599,6 @@ app.get('/sha', (req, res) => {
         var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
         sha1.update(string);
         var hex = sha1.digest('hex');
-        console.log(hex);
         res.send(hex);
     })
 })
