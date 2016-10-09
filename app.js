@@ -35,11 +35,11 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'zxc',
-    database: 'zz'
+    database: 'zuizui'
 })
 app.set('view engine', 'ejs');
 
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser());
 
@@ -501,7 +501,7 @@ app.get('/regist', (req, res) => {
 
 app.post('/getveri', (req, res) => {
     var randomCode = Math.floor(Math.random() * 1000000);
-    sendMS(randomCode, req.body.phoneNum);
+    sendMS(String(randomCode), req.body.phoneNum);
     req.session.phoneNum = req.body.phoneNum;
     req.session.regCode = randomCode;
     res.send('ok');
@@ -534,13 +534,16 @@ app.post('/reg', (req, res) => {
                     if(err) {
                         console.log(err)
                     }
-                    res.send('ok')
+                    res.redirect('/success');
                 })
             }
         }
     })
 })
 
+app.get('/success', (req, res) => {
+    res.render('success')
+})
 
 app.get('/veri', (req, res) => {
     var phoneNum = req.query.phoneNum;

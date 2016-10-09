@@ -1,0 +1,4 @@
+nohup: ignoring input
+Sun, 09 Oct 2016 06:27:31 GMT body-parser deprecated bodyParser: use individual json/urlencoded middlewares at app.js:44:9
+Sun, 09 Oct 2016 06:27:31 GMT body-parser deprecated undefined extended: provide extended option at node_modules/body-parser/index.js:105:29
+Server listening on port 3000

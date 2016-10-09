@@ -5,7 +5,7 @@
     <title>最最联谊平台注册页</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, max-scale=1.0, user-scalable=0;">
     <style>
-        body{background:#EEE}h2{text-align:center}.container{margin:0 10px;box-sizing:border-box}label{display:block;margin:10px 0}.container>input{height:36px;border-radius:4px;width:100%;border:1px solid #CCC}.phoneCont{display:flex}.phoneCont input{flex:3;height:36px;border:1px solid #CCC}#get{outline:0;height:40px;line-height:40px;flex:2;vertical-align:-2px;border-radius:4px;border:1px solid #CCC;background:#1d8cf9;color:#fff;display:inline-block}.container>.tel{width:65%}.opt{border:1px solid #CCC;border-radius:4px;background:#fff}.opt label{display:inline-block}.opt div:nth-of-type(1){border-bottom:1px solid #EEE}.opt select{height:50px;width:100%;background:url(/img/DownArrow.png) right center no-repeat;font-size:16px;appearance:none;-webkit-appearance:none;-ms-appearance:none;-o-appearance:none;border:none;background-size:auto 13px}.school select:nth-of-type(1){border-bottom:1px solid #CCC}h6{text-align:center;padding:0 20px;font-size:14px}h6 span{color:#AAA;font-size:12px}#tj{border-radius:2px;background:#00a8c6;color:#fff;margin:20px 0;border:1px solid #CCC;width:100%;letter-spacing:3px;text-align:center;display:block;height:40px}.fileCont{height:60px;width:100%;border:1px solid #CCC;background:#fff;display:flex;box-sizing:border-box;border-radius:4px;position:relative;align-items:center;justify-content:center}.file{opacity:0;width:100%;height:100%;position:absolute;top:0;left:0;z-index:20}
+        body{background:#EEE}h2{text-align:center}.container{margin:0 10px;box-sizing:border-box}label{display:block;margin:10px 0}.container>input{height:36px;border-radius:4px;width:100%;border:1px solid #CCC}.phoneCont{display:flex}.phoneCont input{flex:3;height:36px;border:1px solid #CCC}#get{outline:0;height:40px;line-height:40px;flex:2;vertical-align:-2px;border-radius:4px;border:1px solid #CCC;background:#1d8cf9;color:#fff;display:inline-block}.container>.tel{width:65%}.opt{border:1px solid #CCC;border-radius:4px;background:#fff}.opt label{display:inline-block}.opt div:nth-of-type(1){border-bottom:1px solid #EEE}.opt select{height:50px;width:100%;background:url(/weixin/img/DownArrow.png) right center no-repeat;font-size:16px;appearance:none;-webkit-appearance:none;-ms-appearance:none;-o-appearance:none;border:none;background-size:auto 13px}.school select:nth-of-type(1){border-bottom:1px solid #CCC}h6{text-align:center;padding:0 20px;font-size:14px}h6 span{color:#AAA;font-size:12px}#tj{border-radius:2px;background:#00a8c6;color:#fff;margin:20px 0;border:1px solid #CCC;width:100%;letter-spacing:3px;text-align:center;display:block;height:40px}.fileCont{height:60px;width:100%;border:1px solid #CCC;background:#fff;display:flex;box-sizing:border-box;border-radius:4px;position:relative;align-items:center;justify-content:center}.file{opacity:0;width:100%;height:100%;position:absolute;top:0;left:0;z-index:20}
         button[disabled] {
             background: #999!important;
         }
@@ -15,7 +15,7 @@
     <h2>
         最最联谊平台注册页面
     </h2>
-    <form action="/reg" method="post" id="sub" enctype="multipart/form-data">
+    <form action="/weixin/reg" method="post" id="sub" enctype="multipart/form-data">
         <div class="container">
             <label for="phone">
                 手机号
@@ -125,7 +125,7 @@
             alert('您的手机号码有误,请重新输入')
         } else {
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/getveri', true);
+            xhr.open('POST', '/weixin/getveri', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.send("phoneNum=" + phoneNum);
             xhr.onreadystatechange = function() {
@@ -146,7 +146,7 @@
             var phoneNum = document.querySelector("#phone").value;
             var regCode = document.querySelector("#verify").value;
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', 'veri?phoneNum=' + phoneNum + '&regCode=' + regCode, true);
+            xhr.open('GET', '/weixin/veri?phoneNum=' + phoneNum + '&regCode=' + regCode, true);
             xhr.send(null);
             xhr.onreadystatechange = function() {
                 if(xhr.readyState === 4) {
