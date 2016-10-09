@@ -36,7 +36,8 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'zxc',
-    database: 'zuizui'
+    database: 'zuizui',
+    dateStrings: true
 })
 app.set('view engine', 'ejs');
 
@@ -272,7 +273,8 @@ app.get('/create', (req, res) => {
                  {
                      "type": "view",
                      "name": "近期活动",
-                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
+                     // "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
+                     url: "http://www.campuslinker.com/weixin/activity"
                  },
                  {
                      "type": "view",
@@ -585,7 +587,16 @@ app.post('/reg', (req, res) => {
 })
 
 app.get('/activity', (req, res) => {
-    res.render('activity')
+    var querySel = 'select * from activity';
+    connection.query(querySel, (err, res1) => {
+        if(err) {
+            console.log(err);
+        } else {
+            res.render('activity', {
+                act: res1
+            })
+        }
+    })
 })
 
 

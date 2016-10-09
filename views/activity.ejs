@@ -4,8 +4,76 @@
     <meta charset="UTF-8">
     <title>Document</title>
     <meta name="viewport" content="initial-scale=1.0, max-scale=1.0, user-scalable=0, width=device-width;">
+    <style>
+        body,html {
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            padding: 0 10%;
+        }
+        .card {
+            border: 1px solid #e9e9e9;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .pic {
+            width: 100%;
+            height: 200px;
+        }
+        img {
+            width: 100%;
+            height: 100%;
+        }
+        .apply {
+            float: right;
+            color: #2db7f5;
+            font-weight: normal;
+        }
+        h2 {
+            color: #6a6a6a;
+            font-size: 13px;
+            padding: 20px;
+            margin: 0;
+            border-bottom: 1px solid #e9e9e9;
+        }
+        .detail {
+            color: #696969;
+            font-size: 12px;
+            padding: 20px 20px 15px 20px;
+            margin: 8px 0 0 0;
+        }
+        .deadline {
+            margin: 0;
+            font-size: 13px;
+            color: #696969;
+            padding: 0px 20px 15px 20px;
+        }
+    </style>
 </head>
 <body>
-    Hello
+    <div id="container">
+        <% if(act) {%>
+            <% act.forEach(function(activity) {%>
+                <div class="card">
+                    <div class="pic">
+                        <img src="/img/<%= activity.img %>" alt="">
+                    </div>
+                    <h2 class="title">
+                        <%= activity.title %>
+                        <span class="apply">
+                            报名
+                        </span>
+                    </h2>
+                    <p class="detail">
+                        <%= activity.detail %>
+                    </p>
+                    <h3 class="deadline">
+                        截止日期: <%= activity.deadline %>
+                    </h3>
+                </div>
+            <% }) %>
+        <% } %>
+    </div>
 </body>
 </html>
