@@ -10,7 +10,8 @@ var express = require('express'),
     xml2js = require('xml2js'),
     builder = new xml2js.Builder(),
     mysql = require('mysql'),
-    token = "", jsapi_ticket = "";
+    token = "";
+    // jsapi_ticket = "";
 
 var session = require('express-session');
 var bodyParser = require('body-parser');
@@ -207,20 +208,21 @@ people.startInterval();
 
 function getToken() {
 	var option = {
-		url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx975cab4041fab87d&secret=08077c0f76eeec4184d8bd05e958689e'
+		url: 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f'
 	}
 	request(option, (err, res1, body) => {
         if(err) {
             console.log(err)
         }
         token = JSON.parse(body).access_token;
-        var opts = {
-            url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi'
-        }
-        request(opts, (err, res1, body) => {
-            jsapi_ticket = JSON.parse(body).ticket;
-            global.setTimeout(getToken, 7200000);
-        });
+        global.setTimeout(getToken, 7200000);
+        // var opts = {
+        //     url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + token + '&type=jsapi'
+        // }
+        // request(opts, (err, res1, body) => {
+        //     jsapi_ticket = JSON.parse(body).ticket;
+        //     global.setTimeout(getToken, 7200000);
+        // });
     })
 }
 
@@ -236,7 +238,7 @@ app.get('/create', (req, res) => {
          json: {
              "button": [
              {
-                 "name": '菜单',
+                 "name": '匹配',
                  "sub_button": [
                  {
                      "type": "click",
@@ -245,28 +247,62 @@ app.get('/create', (req, res) => {
                  },
                  {
                      "type": "click",
-                     "name": "匹配",
+                     "name": "随机匹配",
                      "key": "match"
                  },
                  {
                      "type": "click",
                      "name": "换人",
                      "key": "change"
+                 },
+                 {
+                     "type": "click",
+                     "name": "话题卡",
+                     "key": "card"
+                 },
+                 {
+                     "type": "click",
+                     "name": "对方信息页",
+                     "key": "info"
                  }]
              },
              {
-                 "name": "页面",
+                 "name": "联谊活动",
                  "sub_button": [
                  {
-                     "type": "click",
-                     "name": "查看资料",
-                     "key": "watch"
+                     "type": "view",
+                     "name": "近期活动",
+                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                  },
                  {
                      "type": "view",
-                     "name": "注册",
-                     "url": "http://zuizui.club/weixin/regist"
+                     "name": "个人设置",
+                     "url": "http://www.campuslinker.com/weixin/regist"
                  }]
+             },
+             {
+                 "name": "其他",
+                 "sub_button": [
+                     {
+                         "type": "click",
+                         "name": "使用说明",
+                         "key": "explain"
+                     },
+                     {
+                         "type": "click",
+                         "name": "合作单位",
+                         "url": "cooperate"
+                     },
+                     {
+                         "type": "click",
+                         "name": "联系我们",
+                         "url": "contact"
+                     },
+                     {
+                         "type": "view",
+                         "name": "注册",
+                         "url": "http://www.campuslinker.com/weixin/regist"
+                     }]
              }
              ]
          }
@@ -548,13 +584,18 @@ app.post('/reg', (req, res) => {
     })
 })
 
+app.get('/activity', (req, res) => {
+    res.render('activity')
+})
+
+
 app.get('/reg', (req, res) => {
     res.redirect('/weixin/success');
 })
 
-app.get('/upload', (req, res) => {
-    res.render('upload')
-})
+// app.get('/upload', (req, res) => {
+//     res.render('upload')
+// })
 
 app.get('/success', (req, res) => {
     res.render('success')
@@ -591,22 +632,22 @@ function send(to, msg) {
     })
 }
 
-app.get('/sha', (req, res) => {
-    var noncestr = 'Wm3WZYTPz0wzccnW';
-    var timestamp = 1414587457;
-    var url = 'http://zuizui.club/weixin/upload'
-    var timestamp = +new Date();
-    console.log(jsapi_ticket)
-    console.log(timestamp)
-    var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
-    sha1.update(string);
-    var hex = sha1.digest('hex');
-    console.log(hex)
-    res.send(JSON.stringify({
-        timestamp: timestamp,
-        hex: hex
-    }));
-})
+// app.get('/sha', (req, res) => {
+//     var noncestr = 'Wm3WZYTPz0wzccnW';
+//     var timestamp = 1414587457;
+//     var url = 'http://zuizui.club/weixin/upload'
+//     var timestamp = +new Date();
+//     console.log(jsapi_ticket)
+//     console.log(timestamp)
+//     var string = "jsapi_ticket=" + jsapi_ticket + '&noncestr=' + noncestr + '&timestamp=' + timestamp + '&url=' + url;
+//     sha1.update(string);
+//     var hex = sha1.digest('hex');
+//     console.log(hex)
+//     res.send(JSON.stringify({
+//         timestamp: timestamp,
+//         hex: hex
+//     }));
+// })
 
 function returnXML(to, from, type, content) {
     var msg = {
