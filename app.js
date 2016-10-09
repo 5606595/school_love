@@ -291,12 +291,12 @@ app.get('/create', (req, res) => {
                      {
                          "type": "click",
                          "name": "合作单位",
-                         "url": "cooperate"
+                         "key": "cooperate"
                      },
                      {
                          "type": "click",
                          "name": "联系我们",
-                         "url": "contact"
+                         "key": "contact"
                      },
                      {
                          "type": "view",
