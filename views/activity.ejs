@@ -100,7 +100,7 @@
             var node = event.target.parentNode
             var actid = node.getElementsByClassName("id")[0].textContent;
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/actenroll', true);
+            xhr.open('POST', '/weixin/actenroll', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send("actid=" + actid);
             xhr.onreadystatechange = function() {

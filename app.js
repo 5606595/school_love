@@ -35,7 +35,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'zxc',
     database: 'zuizui',
     dateStrings: true
 })
@@ -565,6 +565,7 @@ app.post('/getveri', (req, res) => {
 })
 
 app.post('/reg', (req, res) => {
+    console.log(req.headers);
     var form = new formidable.IncomingForm();
     form.encoding = 'utf-8';
     form.uploadDir = "/home/ubuntu/zuizui/people";
@@ -604,29 +605,56 @@ app.post('/reg', (req, res) => {
 })
 
 app.get('/activity', (req, res) => {
-    console.log(req.headers['user-agent']);
-    var querySel = 'select * from activity where display = 1';
-    connection.query(querySel, (err, res1) => {
-        if(err) {
-            console.log(err);
-        } else {
-            res.render('activity', {
-                act: res1
-            })
-        }
-    })
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        var querySel = 'select * from activity where display = 1';
+        connection.query(querySel, (err, res1) => {
+            if(err) {
+                console.log(err);
+            } else {
+                res.render('activity', {
+                    act: res1
+                })
+            }
+        })
+    } else {
+        res.send("请用微信浏览器打开");
+    }
 })
 
 app.post("/actenroll", (req, res) => {
-    var actid = req.body.id;
-    console.log(req.headers['user-agent']);
-    res.send('1');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        var actid = req.body.id;
+        var wxid = req.session.wxid;
+        var querySel = "select * from user where weichatNum = " + wxid;
+        connection.query(querySel, (err, res1) => {
+            if(err) {
+                console.log(err);
+                res.send('0');
+                return;
+            }
+            if(res1.length) {
+                if(res1[0].activity) {
+                    res.send('2')
+                } else {
+                    var querySel = "update user set activity = " + actid + " where weichatNum = " + wxid;
+                    connection.query(querySel, (err, res2) => {
+                        if(err) {
+                            console.log(err);
+                            res.send('0');
+                            return;
+                        }
+                        res.send('1');
+                    })
+                }
+            }
+        })
+    }
 })
 
 
 app.get('/reg', (req, res) => {
-    res.redirect('/weixin/success');
-})
+    res.send('1');
+});
 
 // app.get('/upload', (req, res) => {
 //     res.render('upload')
