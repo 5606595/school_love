@@ -35,7 +35,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'zxc',
+    password: '',
     database: 'zuizui',
     dateStrings: true
 })
@@ -104,13 +104,13 @@ class People {
             var i = 0, j = 0;
             this.man2.map((dataMan) => {
                 if(dataMan) {
-                    man1[i] = dataMan;
+                    this.man1[i] = dataMan;
                     i++;
                 }
             })
             this.girl2.map((dataGirl) => {
                 if(dataGirl) {
-                    girl1[j] = dataGirl;
+                    this.girl1[j] = dataGirl;
                 }
             });
             this.man2 = [];
@@ -176,15 +176,15 @@ class People {
                 endTime: Date.now() + 8 * 60 * 1000,
                 canChange: false
             }
-            if(this.matchedTime[man]) {
-                this.matchedTime[man] = 1;
+            if(this.matchedTimes[man]) {
+                this.matchedTimes[man] = 1;
             } else {
-                this.matchedTime[man]++;
+                this.matchedTimes[man]++;
             }
-            if(this.matchedTime[girl]) {
-                this.matchedTime[girl] = 1;
+            if(this.matchedTimes[girl]) {
+                this.matchedTimes[girl] = 1;
             } else {
-                this.matchedTime[girl]++;
+                this.matchedTimes[girl]++;
             }
         } else {
             this.matchList[man] = {
@@ -369,9 +369,13 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
-                    var querySel = "select * from user where randomcode = " + randomCode;
+                    var querySel = "select * from user where randomcode = '" + randomCode + "'";
                     connection.query(querySel, (err, res1) => {
-                        if(res1.length) {
+                        if(err) {
+                            console.log(err)
+                            return;
+                        }
+                        if(!res1.length) {
                             var msg = {
                                 xml: {
                                     ToUserName: result.FromUserName,
@@ -394,7 +398,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 }
                             }
                             var xml = builder.buildObject(msg);
-                            var querySel = "update user set weichatnum = " + result.FromUserName[0] + " where randomcode = " + randomCode;
+                            var querySel = "update user set weichatnum = '" + result.FromUserName[0] + "', allow = 1 where randomcode = '" + randomCode + "'";
                             connection.query(querySel, (err, res2) => {
                                 res.send(xml)
                             });
@@ -420,9 +424,13 @@ app.post('/token', urlencodedParser, (req, res) => {
                     var wechatnum = result.FromUserName[0];
                     if(waitVerify[wechatnum]) {
                     } else {
-                        var querySel = "select * from user where weichatnum = " + result.FromUserName[0];
+                        var querySel = "select * from user where weichatnum = '" + result.FromUserName[0] + "'";
                         connection.query(querySel, (err, res1) => {
-                            if(res1.length && res1[0].randomcode) {
+                            if(err) {
+                                console.log(err);
+                                return;
+                            }
+                            if(res1.length && res1[0].allow == '1') {
                                 var msg = {
                                      xml: {
                                          ToUserName: result.FromUserName,
@@ -453,9 +461,13 @@ app.post('/token', urlencodedParser, (req, res) => {
                     return ;
                 }
                 if(result.EventKey[0] === 'match') {
-                    var querySel = "select * from user where weichatnum = " + result.FromUserName[0];
+                    var querySel = "select * from user where weichatnum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
-                        if(!res1.length) {
+                        if(err) {
+                            console.log(err);
+                            return;
+                        }
+                        if(!res1.length || res1[0].allow == "0") {
                             var msg = {
                                 xml: {
                                     ToUserName: result.FromUserName,
@@ -483,14 +495,14 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     }
                                 }
                                 var xml = builder.buildObject(msg);
-                                if(!res1.choseId) {
+                                if(!res1.activity || Date.now() < res1.starttime || Date.now() > res1.endtime) {
                                     if(res1.gender === 0) {
                                         people.insertMan(result.FromUserName[0])
                                     } else {
                                         people.insertGirl(result.FromUserName[0])
                                     }
                                 } else {
-                                    var id = res1.choseId;
+                                    var id = res1.activity;
                                     if(id > spe.length) {
                                         spe.length = id;
                                         spe[id - 1] = new People(1);
@@ -573,11 +585,16 @@ app.post('/reg', (req, res) => {
             var gender = req.body.gender;
             var school = req.body.school;
             var schema = req.body.schema;
+            var contact = req.body.contact;
+            if(!contact) {
+                contact = phoneNum;
+            }
             if(code && school && schema) {
-                var querySel = "insert into user(phoneNum, password, Name, gender, school, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + photo + "');";
+                var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err)
+                        return;
                     }
                     res.redirect('/weixin/success');
                 })
@@ -587,7 +604,8 @@ app.post('/reg', (req, res) => {
 })
 
 app.get('/activity', (req, res) => {
-    var querySel = 'select * from activity';
+    console.log(req.headers['user-agent']);
+    var querySel = 'select * from activity where display = 1';
     connection.query(querySel, (err, res1) => {
         if(err) {
             console.log(err);
@@ -597,6 +615,12 @@ app.get('/activity', (req, res) => {
             })
         }
     })
+})
+
+app.post("/actenroll", (req, res) => {
+    var actid = req.body.id;
+    console.log(req.headers['user-agent']);
+    res.send('1');
 })
 
 

@@ -30,17 +30,17 @@
             color: #2db7f5;
             font-weight: normal;
         }
-        h2 {
+        .title {
             color: #6a6a6a;
             font-size: 13px;
-            padding: 20px;
+            padding: 20px 20px 10px 20px;
             margin: 0;
             border-bottom: 1px solid #e9e9e9;
         }
         .detail {
             color: #696969;
             font-size: 12px;
-            padding: 20px 20px 15px 20px;
+            padding: 10px 20px 15px 20px;
             margin: 8px 0 0 0;
         }
         .deadline {
@@ -48,6 +48,13 @@
             font-size: 13px;
             color: #696969;
             padding: 0px 20px 15px 20px;
+        }
+        .num {
+            margin: 10px 0px 0px;
+            font-size: 12px;
+        }
+        .id {
+            display: none;
         }
     </style>
 </head>
@@ -59,21 +66,57 @@
                     <div class="pic">
                         <img src="/img/<%= activity.img %>" alt="">
                     </div>
-                    <h2 class="title">
+                    <div class="title">
                         <%= activity.title %>
                         <span class="apply">
                             报名
                         </span>
-                    </h2>
+                        <span class="id"><%= activity.id %></span>
+                        <h3 class="num">
+                            报名人数: <%= activity.regnum %> / <%= activity.maxnum %>
+                        </h3>
+                    </div>
                     <p class="detail">
                         <%= activity.detail %>
                     </p>
                     <h3 class="deadline">
-                        截止日期: <%= activity.deadline %>
+                        报名截止日期: <%= activity.deadline %>
+                    </h3>
+                    <h3 class="deadline">
+                        活动开始日期: <%= activity.starttime %>
+                    </h3>
+                    <h3 class="deadline">
+                        活动截止日期: <%= activity.endtime %>
                     </h3>
                 </div>
             <% }) %>
         <% } %>
     </div>
 </body>
+<script>
+    var container = document.getElementById("container");
+    container.addEventListener("touchstart", function(event) {
+        if(event.target.className === "apply") {
+            var node = event.target.parentNode
+            var actid = node.getElementsByClassName("id")[0].textContent;
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/actenroll', true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send("actid=" + actid);
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 4) {
+                    if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                        if(xhr.responseText == '1') {
+                            alert("报名成功")
+                        } else if(xhr.responseText == '2') {
+                            alert("你已报名其他活动, 不能再进行申请");
+                        } else {
+                            alert("报名失败");
+                        }
+                    }
+                }
+            }
+        }
+    }, false);
+</script>
 </html>
