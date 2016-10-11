@@ -122,7 +122,7 @@
     var option = "";
     var select1 = document.querySelector(".select1");
     var select2 = document.querySelector(".select2");
-    btn.addEventListener("click", function(event) {
+    btn.addEventListener("touchstart", function(event) {
         event.preventDefault();
         var phoneNum = document.querySelector("#phone").value;
         if(!(/^1[34578]\d{9}$/.test(phoneNum))){
@@ -135,8 +135,14 @@
             xhr.onreadystatechange = function() {
                 if(xhr.readyState === 4) {
                     if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
-                        btn.setAttribute('disabled', 'disabled');
-                        window.setTimeout(dis, 100);
+                        if(xhr.responseText == "1") {
+                            btn.setAttribute('disabled', 'disabled');
+                            window.setTimeout(dis, 100);
+                        } else if(xhr.responseText == "2") {
+                            alert("该手机号已被注册, 请重新输入")
+                        } else {
+                            alert("系统错误")
+                        }
                     }
                 }
             }
@@ -147,21 +153,26 @@
         if(!document.querySelector("#phone").value || !document.querySelector("#verify").value || !document.querySelector("#code").value || !document.querySelector("#name").value || !document.querySelector(".gender input:checked") || !document.querySelector(".select1").value || !document.querySelector(".select2").value || !document.querySelector(".select3").value || !document.querySelector("#photo").value) {
             alert('您有未填写信息')
         } else {
-            var phoneNum = document.querySelector("#phone").value;
-            var regCode = document.querySelector("#verify").value;
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/weixin/veri?phoneNum=' + phoneNum + '&regCode=' + regCode, true);
-            xhr.send(null);
-            xhr.onreadystatechange = function() {
-                if(xhr.readyState === 4) {
-                    if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
-                        if(xhr.responseText == 0) {
-                            alert('手机号或验证码错误')
-                        } else {
-                            form.submit();
+            var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
+            if(reg.test(document.querySelector("#code").value)) {
+                var phoneNum = document.querySelector("#phone").value;
+                var regCode = document.querySelector("#verify").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/weixin/veri?phoneNum=' + phoneNum + '&regCode=' + regCode, true);
+                xhr.send(null);
+                xhr.onreadystatechange = function() {
+                    if(xhr.readyState === 4) {
+                        if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                            if(xhr.responseText == 0) {
+                                alert('手机号或验证码错误')
+                            } else {
+                                form.submit();
+                            }
                         }
                     }
                 }
+            } else {
+                alert("密码太过简单,请重新输入")
             }
         }
     })

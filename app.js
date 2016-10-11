@@ -552,56 +552,78 @@ app.post('/token', urlencodedParser, (req, res) => {
 })
 
 app.get('/regist', (req, res) => {
-    res.render('regist');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        res.render('regist');
+    } else {
+        res.send("请用微信浏览器打开")
+    }
 })
 
 app.post('/getveri', (req, res) => {
-    var randomCode = Math.floor(Math.random() * 1000000);
-    sendMS(String(randomCode), req.body.phoneNum);
-    req.session.phoneNum = req.body.phoneNum;
-    req.session.regCode = randomCode;
-    console.log(req.session);
-    res.send('ok');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        var phoneNum = req.body.phoneNum;
+        var querySel = "select * from user where phoneNum = '" + phoneNum + "'";
+        connection.query(querySel, (err, res1) => {
+            if (err) {
+                console.log(err)
+                res.send('0');
+                return;
+            }
+            if (res1.length) {
+                res.send('2');
+            } else {
+                var randomCode = Math.floor(Math.random() * 1000000);
+                sendMS(String(randomCode), phoneNum);
+                req.session.phoneNum = phoneNum;
+                req.session.regCode = randomCode;
+                res.send('1');
+            }
+        })
+    }
 })
 
 app.post('/reg', (req, res) => {
-    console.log(req.headers);
-    var form = new formidable.IncomingForm();
-    form.encoding = 'utf-8';
-    form.uploadDir = "/home/ubuntu/zuizui/people";
-    form.on('file', (name, file) => {
-        var arr = file.path.split('/');
-        file.name = arr.slice(arr.length - 1, arr.length)[0];
-    })
-    form.maxFieldsSize = 2 * 1024 * 1024;
-    form.parse(req, (err, filed, file) => {
-        req.body = filed;
-        req.file = file;
-        var photo = req.file.photo.name
-        var phoneNum = req.body.phoneNum;
-        var regCode = req.body.regCode;
-        if(phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
-            var code = req.body.code;
-            var name = req.body.name;
-            var gender = req.body.gender;
-            var school = req.body.school;
-            var schema = req.body.schema;
-            var contact = req.body.contact;
-            if(!contact) {
-                contact = phoneNum;
-            }
-            if(code && school && schema) {
-                var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
-                connection.query(querySel, (err, res1) => {
-                    if(err) {
-                        console.log(err)
-                        return;
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        var form = new formidable.IncomingForm();
+        form.encoding = 'utf-8';
+        form.uploadDir = "/home/ubuntu/zuizui/people";
+        form.on('file', (name, file) => {
+            var arr = file.path.split('/');
+            file.name = arr.slice(arr.length - 1, arr.length)[0];
+        })
+        form.maxFieldsSize = 2 * 1024 * 1024;
+        form.parse(req, (err, filed, file) => {
+            req.body = filed;
+            req.file = file;
+            var photo = req.file.photo.name
+            var phoneNum = req.body.phoneNum;
+            var regCode = req.body.regCode;
+            if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
+                var code = req.body.code;
+                var name = req.body.name;
+                var gender = req.body.gender;
+                var school = req.body.school;
+                var schema = req.body.schema;
+                var contact = req.body.contact;
+                if (!contact) {
+                    contact = phoneNum;
+                }
+                if (code && school && schema) {
+                    var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
+                    if (reg.test(code)) {
+                        var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
+                        connection.query(querySel, (err, res1) => {
+                            if (err) {
+                                console.log(err)
+                                return;
+                            }
+                            res.redirect('/weixin/success');
+                        })
                     }
-                    res.redirect('/weixin/success');
-                })
+                }
             }
-        }
-    })
+        })
+    }
 })
 
 app.get('/activity', (req, res) => {
@@ -653,7 +675,7 @@ app.post("/actenroll", (req, res) => {
 
 
 app.get('/reg', (req, res) => {
-    res.send('1');
+    res.render('success');
 });
 
 // app.get('/upload', (req, res) => {
