@@ -23,6 +23,8 @@ var client = new TopClient({
 });
 var formidable = require('formidable');
 
+var askp = {}, recep = {};
+
 app.use(session({
     secret: 'zuizui-lianyi',
     resave: false,
@@ -59,6 +61,8 @@ class People {
         if(status === 0) {
             this.limit = 3;
             this.matchedTimes = {};
+        } else {
+            this.contactList = {}
         }
     }
     matchCheck() {
@@ -132,8 +136,29 @@ class People {
         } else {
             for(var i in this.matchList) {
                 if(this.matchList[i].endTime < Date.now()) {
-                    send(this.matchList[i].user, '聊天时间结束')
-                    delete this.matchList[i]
+                    var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
+                    connection.query(querySel, (err, res1) => {
+                        if(err) {
+                            console.log(err);
+                            return;
+                        }
+                        if(res1[0]) {
+                            res1 = JSON.stringify(JSON.parse(res1[0]).push(this.matchList[i]));
+                        } else {
+                            res1 = JSON.stringfy([this.matchList[i]]);
+                        }
+                        var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
+                        connection.query(querySel, (err, res2) => {
+                            if(err) {
+                                console.log(err)
+                                return;
+                            }
+                            send(this.matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
+                            askp[i] = this.matchList[i];
+                            delete this.matchList[i]
+                        })
+                    })
+
                 }
             }
         }
@@ -271,6 +296,16 @@ app.get('/create', (req, res) => {
                  "name": "联谊活动",
                  "sub_button": [
                  {
+                     "type": "click",
+                     "name": "同意",
+                     "key": "agree"
+                 },
+                 {
+                     "type": "click",
+                     "name": "不同意",
+                     "key": "disagree"
+                 },
+                 {
                      "type": "view",
                      "name": "近期活动",
                      // "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
@@ -349,6 +384,10 @@ app.post('/token', urlencodedParser, (req, res) => {
         parseString(str, (err, result) => {
             result = result.xml;
             if(result.MsgType[0] === 'text') {
+                if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
+                    send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
+                    recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
+                }
                 if(people.matchList[result.FromUserName[0]]) {
                     send(people.matchList[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
@@ -480,11 +519,14 @@ app.post('/token', urlencodedParser, (req, res) => {
                             var xml = builder.buildObject(msg);
                             res.send(xml);
                         } else {
-                            if(!res1.choseid && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
+                            if(!res1[0].activity && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
                                 res.send(xml);
                                 return ;
                             } else {
+                                if(askp[result.FromUserName[0]]) {
+                                    delete askp[result.FromUserName[0]];
+                                }
                                 var msg = {
                                     xml: {
                                         ToUserName: result.FromUserName,
@@ -542,6 +584,42 @@ app.post('/token', urlencodedParser, (req, res) => {
                         });
                     } else {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件, 换人失败']);
+                        res.send(xml);
+                        return ;
+                    }
+                }
+                if(result.EventKey[0] === 'agree') {
+                    if(recep[result.FromUserName[0]]) {
+                        var rece = result.FromUserName[0];
+                        var ask = askp[result.FromUserName[0]];
+                        var querySel = "select contact from user where weichatNum = " + recep;
+                        connection.query(querySel, (err, res1) => {
+                            if(err) {
+                                console.log(err);
+                                return;
+                            }
+                            var contact = res1[0];
+                            send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                            res.send(xml);
+                            return ;
+                        })
+                    } else {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件']);
+                        res.send(xml);
+                        return ;
+                    }
+                }
+                if(result.EventKey[0] === 'disagree') {
+                    if(recep[result.FromUserName[0]]) {
+                        var rece = result.FromUserName[0];
+                        var ask = askp[result.FromUserName[0]];
+                        send(ask, '对方不同意您的请求');
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                        res.send(xml);
+                        return ;
+                    } else {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件']);
                         res.send(xml);
                         return ;
                     }
@@ -658,14 +736,41 @@ app.post("/actenroll", (req, res) => {
                 if(res1[0].activity) {
                     res.send('2')
                 } else {
-                    var querySel = "update user set activity = " + actid + " where weichatNum = " + wxid;
+                    var querySel = "select * from activity where id = " + actid;
                     connection.query(querySel, (err, res2) => {
                         if(err) {
                             console.log(err);
                             res.send('0');
                             return;
                         }
-                        res.send('1');
+                        if(res2.length) {
+                            if(+new Date() >= +new Date(res2.deadline)) {
+                                res.send('3')
+                            } else if(res2.regnum >= res2.maxnum) {
+                                res.send('4')
+                            } else {
+                                var starttime = res2.starttime;
+                                var endtime = res2.endtime;
+                                var regnum = Number(res2.regnum) + 1;
+                                var querySel1 = "update user set activity = '" + actid + "', starttime = '" + starttime + "', endtime = '" + endtime + "' where weichatNum = " + wxid;
+                                connection.query(querySel1, (err, res3) => {
+                                    if(err) {
+                                        console.log(err);
+                                        res.send('0');
+                                        return;
+                                    }
+                                    var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
+                                    connection.query(querySel2, (err, res4) => {
+                                        if(err) {
+                                            console.log(err);
+                                            res.send('0');
+                                            return;
+                                        }
+                                        res.send('1');
+                                    })
+                                })
+                            }
+                        }
                     })
                 }
             }

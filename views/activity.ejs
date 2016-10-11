@@ -49,6 +49,18 @@
             color: #696969;
             padding: 0px 20px 15px 20px;
         }
+        .starttime {
+            margin: 0;
+            font-size: 13px;
+            color: #696969;
+            padding: 0px 20px 15px 20px;
+        }
+        .endtime {
+            margin: 0;
+            font-size: 13px;
+            color: #696969;
+            padding: 0px 20px 15px 20px;
+        }
         .num {
             margin: 10px 0px 0px;
             font-size: 12px;
@@ -73,7 +85,7 @@
                         </span>
                         <span class="id"><%= activity.id %></span>
                         <h3 class="num">
-                            报名人数: <%= activity.regnum %> / <%= activity.maxnum %>
+                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
                         </h3>
                     </div>
                     <p class="detail">
@@ -82,10 +94,10 @@
                     <h3 class="deadline">
                         报名截止日期: <%= activity.deadline %>
                     </h3>
-                    <h3 class="deadline">
+                    <h3 class="starttime">
                         活动开始日期: <%= activity.starttime %>
                     </h3>
-                    <h3 class="deadline">
+                    <h3 class="endtime">
                         活动截止日期: <%= activity.endtime %>
                     </h3>
                 </div>
@@ -98,6 +110,17 @@
     container.addEventListener("touchstart", function(event) {
         if(event.target.className === "apply") {
             var node = event.target.parentNode
+            var deadline = node.getElementByClassName("deadline")[0].textContent;
+            if(+new Date() > +new Date(deadline)) {
+                alert("已超过报名截止时间,报名失败")
+                return;
+            }
+            var regnum = node.getElementByClassName("regnum").textContent;
+            var maxnum = node.getElementByClassName("maxnum").textContent;
+            if(regnum >= maxnum) {
+                alert("报名人数已满,报名失败");
+                return;
+            }
             var actid = node.getElementsByClassName("id")[0].textContent;
             var xhr = new XMLHttpRequest();
             xhr.open('POST', '/weixin/actenroll', true);
