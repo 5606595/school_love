@@ -66,22 +66,18 @@ class People {
         }
     }
     matchCheck() {
-        console.log(this.man1);
-        console.log(this.man2);
-        console.log(this.girl1);
-        console.log(this.girl2);
         if(this.flag === 0) {
-            this.man1.map((dataMan, i) => {
-                this.girl1.map((dataGirl, j) => {
-                    if(this.matched[dataMan] && this.matched[dataMan].findEle(dataGirl)) {
+            for(var i in man1) {
+                for(var j in girl1) {
+                    if(this.matched[man1[i]] && this.matched[man1[i]].findEle(girl1[j])) {
 
                     } else {
-                        this.match(dataMan, dataGirl);
-                        dataMan = "";
-                        dataGirl = "";
+                        this.match(man1[i], girl1[j]);
+                        man1[i] = "";
+                        girl1[j] = "";
                     }
-                })
-            })
+                }
+            }
             var i = 0, j = 0;
             this.man1.map((dataMan) => {
                 if(dataMan) {
@@ -98,17 +94,17 @@ class People {
             this.girl1 = [];
             this.flag = 1;
         } else {
-            this.man2.map((dataMan, i) => {
-                this.girl2.map((dataGirl, j) => {
-                    if(this.matched[dataMan] && this.matched[dataMan].findEle(dataGirl)) {
+            for(var i in man2) {
+                for(var j in girl2) {
+                    if(this.matched[man2[i]] && this.matched[man2[i]].findEle(girl2[j])) {
 
                     } else {
-                        this.match(dataMan, dataGirl);
-                        dataMan = "";
-                        dataGirl = "";
+                        this.match(man2[i], girl2[j]);
+                        man2[i] = "";
+                        girl2[j] = "";
                     }
-                })
-            })
+                }
+            }
             var i = 0, j = 0;
             this.man2.map((dataMan) => {
                 if(dataMan) {
