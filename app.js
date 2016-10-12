@@ -66,8 +66,6 @@ class People {
         }
     }
     matchCheck() {
-        console.log(this.matchList);
-        console.log(this.man1);
         console.log(this.girl1);
         if(this.flag === 0) {
             this.man1.map((dataMan, i) => {
