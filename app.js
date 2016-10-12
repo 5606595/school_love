@@ -465,10 +465,11 @@ app.post('/token', urlencodedParser, (req, res) => {
             }
             if(result.MsgType[0] === 'event') {
                 if(result.EventKey[0] === 'verify') {
+                    console.log(123);
                     var wechatnum = result.FromUserName[0];
                     if(waitVerify[wechatnum]) {
                     } else {
-                        var querySel = "select * from user where weichatnum = '" + result.FromUserName[0] + "'";
+                        var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
                                 console.log(err);
@@ -501,7 +502,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                     }
                     var xml = builder.buildObject(msg);
                     res.send(xml);
-                    return ;
                 }
                 if(result.EventKey[0] === 'match') {
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
