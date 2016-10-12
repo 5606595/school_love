@@ -66,7 +66,6 @@ class People {
         }
     }
     matchCheck() {
-        console.log(this.girl1);
         if(this.flag === 0) {
             this.man1.map((dataMan, i) => {
                 this.girl1.map((dataGirl, j) => {
@@ -498,7 +497,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             FromUserName: result.ToUserName,
                             CreateTime: [String(+new Date())],
                             MsgType: ['text'],
-                            Content: ['请输入您的验证码']
+                            Content: ['请在输入框发送您的验证码']
                         }
                     }
                     var xml = builder.buildObject(msg);
@@ -629,8 +628,8 @@ app.post('/token', urlencodedParser, (req, res) => {
                         return ;
                     }
                 }
-             }
-         })
+            }
+        })
     })
 })
 
