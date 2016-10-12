@@ -483,7 +483,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                                  res.send(xml)
                             }
                         })
-                        return ;
                     }
                     waitVerify[wechatnum] = true;
                     var msg = {
