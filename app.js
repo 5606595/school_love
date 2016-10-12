@@ -523,7 +523,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             var xml = builder.buildObject(msg);
                             res.send(xml);
                         } else {
-                            if(!res1[0].activity && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
+                            if(!res1[0].activity && people.matchedTimes[result.FromUserName[0]] && people.matchedTimes[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
                                 res.send(xml);
                                 return ;
