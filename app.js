@@ -465,9 +465,9 @@ app.post('/token', urlencodedParser, (req, res) => {
             }
             if(result.MsgType[0] === 'event') {
                 if(result.EventKey[0] === 'verify') {
-                    console.log(123);
                     var wechatnum = result.FromUserName[0];
                     if(waitVerify[wechatnum]) {
+
                     } else {
                         var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                         connection.query(querySel, (err, res1) => {
@@ -523,6 +523,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             var xml = builder.buildObject(msg);
                             res.send(xml);
                         } else {
+                            console.log(456)
                             if(!res1[0].activity && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
                                 res.send(xml);
