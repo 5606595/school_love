@@ -125,7 +125,7 @@ class People {
     check() {
         if(this.status === 0) {
             for(var i in this.matchList) {
-                console.log(this.matchList[i].changeTime)
+                console.log(this.matchList[i].endTime)
                 console.log(Date.now());
                 if(this.matchList[i].changeTime < Date.now()) {
                     this.matchList[i].canChange = true;
@@ -576,7 +576,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                         send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
                         delete people.matchList[obj];
                         delete people.matchList[result.FromUserName[0]];
-                        var querySel = 'select * from user where weichatNum = ' + result.FromUserName[0];
+                        var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
                                 console.log(err);
