@@ -749,16 +749,14 @@ app.post("/actenroll", (req, res) => {
                             } else if(res2.regnum >= res2.maxnum) {
                                 res.send('4')
                             } else {
-                                var starttime = res2.starttime;
-                                var endtime = res2.endtime;
-                                var regnum = Number(res2.regnum) + 1;
-                                var querySel1 = "update user set activity = '" + actid + "', starttime = '" + starttime + "', endtime = '" + endtime + "' where weichatNum = " + wxid;
+                                var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1.id + ", '" + res1.Name + "', " + actid + ", '" + res2.title + "', '" + res1.school + "');";
                                 connection.query(querySel1, (err, res3) => {
                                     if(err) {
                                         console.log(err);
                                         res.send('0');
                                         return;
                                     }
+                                    var regnum = Number(res2.regnum) + 1;
                                     var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
                                     connection.query(querySel2, (err, res4) => {
                                         if(err) {
@@ -769,6 +767,7 @@ app.post("/actenroll", (req, res) => {
                                         res.send('1');
                                     })
                                 })
+
                             }
                         }
                     })
