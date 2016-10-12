@@ -543,7 +543,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 }
                                 var xml = builder.buildObject(msg);
                                 if(!res1[0].activity || Date.now() < res1[0].starttime || Date.now() > res1[0].endtime) {
-                                    if(res1[0].gender === 0) {
+                                    if(res1[0].gender == '0') {
                                         people.insertMan(result.FromUserName[0])
                                     } else {
                                         people.insertGirl(result.FromUserName[0])
