@@ -37,7 +37,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'zxc',
+    password: '123456',
     database: 'zuizui',
     dateStrings: true
 })
