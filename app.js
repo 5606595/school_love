@@ -436,6 +436,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     Content: ['验证成功']
                                 }
                             }
+                            console.log('验证成功');
                             var xml = builder.buildObject(msg);
                             var querySel = "update user set weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomCode = '" + randomCode + "'";
                             connection.query(querySel, (err, res2) => {
