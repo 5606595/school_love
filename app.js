@@ -184,10 +184,10 @@ class People {
     }
     match(man, girl) {
         if(this.matched[man]) {
-            this.matched[man].insertNode(girl);
+            this.matched[man].insertNode(this.matched[man].tree, girl);
         } else {
             this.matched[man] = new AVLTree();
-            this.matched[man].insertNode(girl);
+            this.matched[man].insertNode(this.matched[man].tree, girl);
         }
         if(this.status === 0) {
             this.matchList[man] = {
