@@ -67,14 +67,14 @@ class People {
     }
     matchCheck() {
         if(this.flag === 0) {
-            for(var i in man1) {
-                for(var j in girl1) {
-                    if(this.matched[man1[i]] && this.matched[man1[i]].findEle(girl1[j])) {
+            for(var i in this.man1) {
+                for(var j in this.girl1) {
+                    if(this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j])) {
 
                     } else {
-                        this.match(man1[i], girl1[j]);
-                        man1[i] = "";
-                        girl1[j] = "";
+                        this.match(this.man1[i], this.girl1[j]);
+                        this.man1[i] = "";
+                        this.girl1[j] = "";
                     }
                 }
             }
@@ -94,14 +94,14 @@ class People {
             this.girl1 = [];
             this.flag = 1;
         } else {
-            for(var i in man2) {
-                for(var j in girl2) {
-                    if(this.matched[man2[i]] && this.matched[man2[i]].findEle(girl2[j])) {
+            for(var i in this.man2) {
+                for(var j in this.girl2) {
+                    if(this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j])) {
 
                     } else {
-                        this.match(man2[i], girl2[j]);
-                        man2[i] = "";
-                        girl2[j] = "";
+                        this.match(this.man2[i], this.girl2[j]);
+                        this.man2[i] = "";
+                        this.girl2[j] = "";
                     }
                 }
             }
