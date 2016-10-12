@@ -125,12 +125,14 @@ class People {
     check() {
         if(this.status === 0) {
             for(var i in this.matchList) {
+                console.log(this.matchList[i].changeTime)
+                console.log(Date.now());
+                if(this.matchList[i].changeTime < Date.now()) {
+                    this.matchList[i].canChange = true;
+                }
                 if(this.matchList[i].endTime < Date.now()) {
                     send(this.matchList[i].user, '聊天时间结束')
                     delete this.matchList[i]
-                }
-                if(this.matchList[i].changeTime < Date.now()) {
-                    this.matchList[i].canChange = true;
                 }
             }
         } else {
