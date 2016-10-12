@@ -523,7 +523,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                             var xml = builder.buildObject(msg);
                             res.send(xml);
                         } else {
-                            console.log(456)
                             if(!res1[0].activity && people.matchedTime[result.FromUserName[0]] && people.matchedTime[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
                                 res.send(xml);
@@ -542,20 +541,20 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     }
                                 }
                                 var xml = builder.buildObject(msg);
-                                if(!res1.activity || Date.now() < res1.starttime || Date.now() > res1.endtime) {
-                                    if(res1.gender === 0) {
+                                if(!res1[0].activity || Date.now() < res1[0].starttime || Date.now() > res1[0].endtime) {
+                                    if(res1[0].gender === 0) {
                                         people.insertMan(result.FromUserName[0])
                                     } else {
                                         people.insertGirl(result.FromUserName[0])
                                     }
                                 } else {
-                                    var id = res1.activity;
+                                    var id = res1[0].activity;
                                     if(id > spe.length) {
                                         spe.length = id;
                                         spe[id - 1] = new People(1);
                                         spe[id - 1].startInterval();
                                     }
-                                    if(res1.gender === 0) {
+                                    if(res1[0].gender === 0) {
                                         spe[id - 1].insertMan(result.FromUserName[0])
                                     } else {
                                         spe[id - 1].insertGirl(result.FromUserName[0])
