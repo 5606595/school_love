@@ -168,14 +168,14 @@ class People {
         setInterval(this.check.bind(this), 20000);
     }
     insertMan(id) {
-        if(flag) {
+        if(this.flag) {
             this.man2.push(id);
         } else {
             this.man1.push(id);
         }
     }
     insertGirl(id) {
-        if(flag) {
+        if(this.flag) {
             this.girl2.push(id);
         } else {
             this.girl1.push(id);
