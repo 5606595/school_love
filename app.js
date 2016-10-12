@@ -408,7 +408,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
-                    var querySel = "select * from user where randomcode = '" + randomCode + "'";
+                    var querySel = "select * from user where randomCode = '" + randomCode + "'";
                     connection.query(querySel, (err, res1) => {
                         if(err) {
                             console.log(err)
@@ -437,8 +437,12 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 }
                             }
                             var xml = builder.buildObject(msg);
-                            var querySel = "update user set weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomcode = '" + randomCode + "'";
+                            var querySel = "update user set weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomCode = '" + randomCode + "'";
                             connection.query(querySel, (err, res2) => {
+                                if(err) {
+                                    console.log(err);
+                                    return;
+                                }
                                 res.send(xml)
                             });
                         }
