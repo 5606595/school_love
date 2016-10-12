@@ -166,8 +166,8 @@ class People {
         }
     }
     startInterval() {
-        setInterval(this.matchCheck.bind(this), 20000);
-        setInterval(this.check.bind(this), 20000);
+        setInterval(this.matchCheck.bind(this), 10000);
+        setInterval(this.check.bind(this), 10000);
     }
     insertMan(id) {
         if(this.flag) {
