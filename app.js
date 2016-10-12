@@ -66,6 +66,10 @@ class People {
         }
     }
     matchCheck() {
+        console.log(this.man1);
+        console.log(this.man2);
+        console.log(this.girl1);
+        console.log(this.girl2);
         if(this.flag === 0) {
             this.man1.map((dataMan, i) => {
                 this.girl1.map((dataGirl, j) => {
@@ -182,6 +186,7 @@ class People {
         }
     }
     match(man, girl) {
+        console.log('match');
         if(this.matched[man]) {
             this.matched[man].insertNode(this.matched[man].tree, girl);
         } else {
