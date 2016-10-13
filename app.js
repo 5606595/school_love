@@ -367,6 +367,9 @@ app.post('/token', urlencodedParser, (req, res) => {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送您的请求']);
+                    res.send(xml);
+                    return ;
                 }
                 if(matchList[result.FromUserName[0]]) {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " -> '" + matchList[result.FromUserName[0]].user + "': " + result.Content[0]);
@@ -920,7 +923,7 @@ function check() {
                 //         }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
                         send(matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
-                        askp[i] = matchList[i];
+                        askp[i] = matchList[i].user;
                         delete matchList[i]
                     // })
                 // })
