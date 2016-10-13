@@ -179,12 +179,12 @@ class People {
                 endTime: Date.now() + 20 * 1000,
                 canChange: false
             }
-            if(this.matchedTimes[man]) {
+            if(!this.matchedTimes[man]) {
                 this.matchedTimes[man] = 1;
             } else {
                 this.matchedTimes[man]++;
             }
-            if(this.matchedTimes[girl]) {
+            if(!this.matchedTimes[girl]) {
                 this.matchedTimes[girl] = 1;
             } else {
                 this.matchedTimes[girl]++;
