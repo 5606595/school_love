@@ -169,14 +169,14 @@ class People {
         if(this.status === 0) {
             matchList[man] = {
                 user: girl,
-                changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 8 * 60 * 1000,
+                changeTime: Date.now() + 8 * 1000,
+                endTime: Date.now() + 10 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
-                changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 8 * 60 * 1000,
+                changeTime: Date.now() + 8 * 1000,
+                endTime: Date.now() + 10 * 1000,
                 canChange: false
             }
             if(this.matchedTimes[man]) {
@@ -493,6 +493,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                     }
                 }
                 if(result.EventKey[0] === 'match') {
+                    if(matchList[result.FromUserName[0]]) {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您已有匹配对象,匹配失败']);
+                        res.send(xml);
+                        return ;
+                    }
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
                         if(err) {
@@ -557,25 +562,36 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(result.EventKey[0] === 'change') {
                     if(matchList[result.FromUserName[0]] && matchList[result.FromUserName[0]].canChange) {
-                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
-                        var obj = matchList[result.FromUserName[0]].user;
-                        send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
-                        console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 换人对象: '" + obj + "'" );
-                        delete matchList[obj];
-                        delete matchList[result.FromUserName[0]];
-                        var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
-                        connection.query(querySel, (err, res1) => {
-                            if(err) {
-                                console.log(err);
-                            }
-                            if(res1[0].gender == '0') {
-                                people.insertMan(result.FromUserName[0]);
-                            } else {
-                                people.insertGirl(result.FromUserName[0]);
-                            }
+                        if(people.matchedTimes[result.FromUserName[0]] > people.limit) {
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 您今日已达匹配次数上限, 匹配失败']);
+                            var obj = matchList[result.FromUserName[0]].user;
+                            send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
+                            console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 换人对象: '" + obj + "'" );
+                            delete matchList[obj];
+                            delete matchList[result.FromUserName[0]];
                             res.send(xml);
                             return ;
-                        });
+                        } else {
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
+                            var obj = matchList[result.FromUserName[0]].user;
+                            send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
+                            console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 换人对象: '" + obj + "'" );
+                            delete matchList[obj];
+                            delete matchList[result.FromUserName[0]];
+                            var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
+                            connection.query(querySel, (err, res1) => {
+                                if(err) {
+                                    console.log(err);
+                                }
+                                if(res1[0].gender == '0') {
+                                    people.insertMan(result.FromUserName[0]);
+                                } else {
+                                    people.insertGirl(result.FromUserName[0]);
+                                }
+                                res.send(xml);
+                                return ;
+                            });
+                        }
                     } else {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件, 换人失败']);
                         res.send(xml);
