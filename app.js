@@ -170,13 +170,13 @@ class People {
             matchList[man] = {
                 user: girl,
                 changeTime: Date.now() + 8 * 1000,
-                endTime: Date.now() + 10 * 1000,
+                endTime: Date.now() + 20 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
                 changeTime: Date.now() + 8 * 1000,
-                endTime: Date.now() + 10 * 1000,
+                endTime: Date.now() + 20 * 1000,
                 canChange: false
             }
             if(this.matchedTimes[man]) {
