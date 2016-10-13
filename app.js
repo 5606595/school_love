@@ -23,7 +23,7 @@ var client = new TopClient({
 });
 var formidable = require('formidable');
 
-var askp = {}, recep = {};
+var askp = {}, recep = {}, matchList = {};
 
 app.use(session({
     secret: 'zuizui-lianyi',
@@ -56,7 +56,6 @@ class People {
         this.girl2 = [];
         this.flag = 0;
         this.matched = {};
-        this.matchList = {};
         this.status = status;
         if(status === 0) {
             this.limit = 3;
@@ -122,52 +121,8 @@ class People {
             this.flag = 0;
         }
     }
-    check() {
-        if(this.status === 0) {
-            for(var i in this.matchList) {
-                console.log(this.matchList[i].endTime)
-                console.log(Date.now());
-                if(this.matchList[i].changeTime < Date.now()) {
-                    this.matchList[i].canChange = true;
-                }
-                if(this.matchList[i].endTime < Date.now()) {
-                    send(this.matchList[i].user, '聊天时间结束')
-                    delete this.matchList[i]
-                }
-            }
-        } else {
-            for(var i in this.matchList) {
-                if(this.matchList[i].endTime < Date.now()) {
-                    var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
-                    connection.query(querySel, (err, res1) => {
-                        if(err) {
-                            console.log(err);
-                            return;
-                        }
-                        if(res1[0]) {
-                            res1 = JSON.stringify(JSON.parse(res1[0]).push(this.matchList[i]));
-                        } else {
-                            res1 = JSON.stringfy([this.matchList[i]]);
-                        }
-                        var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
-                        connection.query(querySel, (err, res2) => {
-                            if(err) {
-                                console.log(err)
-                                return;
-                            }
-                            send(this.matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
-                            askp[i] = this.matchList[i];
-                            delete this.matchList[i]
-                        })
-                    })
-
-                }
-            }
-        }
-    }
     startInterval() {
         setInterval(this.matchCheck.bind(this), 10000);
-        setInterval(this.check.bind(this), 10000);
     }
     insertMan(id) {
         if(this.flag) {
@@ -192,13 +147,13 @@ class People {
             this.matched[man].insertNode(this.matched[man].tree, girl);
         }
         if(this.status === 0) {
-            this.matchList[man] = {
+            matchList[man] = {
                 user: girl,
                 changeTime: Date.now() + 3 * 60 * 1000,
                 endTime: Date.now() + 8 * 60 * 1000,
                 canChange: false
             }
-            this.matchList[girl] = {
+            matchList[girl] = {
                 user: man,
                 changeTime: Date.now() + 3 * 60 * 1000,
                 endTime: Date.now() + 8 * 60 * 1000,
@@ -215,11 +170,11 @@ class People {
                 this.matchedTimes[girl]++;
             }
         } else {
-            this.matchList[man] = {
+            matchList[man] = {
                 user: girl,
                 endTime: Date.now() + 6 * 60 * 1000
             }
-            this.matchList[girl] = {
+            matchList[girl] = {
                 user: man,
                 endTime: Date.now() + 6 * 60 * 1000
             }
@@ -233,6 +188,7 @@ class People {
 getToken();
 
 var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = [];
+global.setInterval(check, 10000);
 people.startInterval();
 
 function getToken() {
@@ -391,23 +347,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
                 }
-                if(people.matchList[result.FromUserName[0]]) {
-                    send(people.matchList[result.FromUserName[0]].user, result.Content[0])
+                if(matchList[result.FromUserName[0]]) {
+                    send(matchList[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
-                    return ;
-                } else {
-                   var has = spe.some((data) => {
-                       return data.matchList[result.FromUserName[0]].user
-                   })
-                   if(has) {
-                       spe.map((data) => {
-                           if (data.matchList[result.FromUserName[0]].user) {
-                               send(data.matchList[result.FromUserName[0]].user, result.Content[0])
-                               res.send('success');
-                           }
-                       })
-                       return ;
-                   }
+                    return;
                 }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
@@ -570,12 +513,12 @@ app.post('/token', urlencodedParser, (req, res) => {
                     })
                 }
                 if(result.EventKey[0] === 'change') {
-                    if(people.matchList[result.FromUserName[0]] && people.matchList[result.FromUserName[0]].canChange) {
+                    if(matchList[result.FromUserName[0]] && matchList[result.FromUserName[0]].canChange) {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
-                        var obj = people.matchList[result.FromUserName[0]].user;
+                        var obj = matchList[result.FromUserName[0]].user;
                         send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
-                        delete people.matchList[obj];
-                        delete people.matchList[result.FromUserName[0]];
+                        delete matchList[obj];
+                        delete matchList[result.FromUserName[0]];
                         var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
@@ -880,6 +823,46 @@ function sendMS(num, phoneNum) {
                 return false;
             }
         })
+    }
+}
+
+function check() {
+    for(var i in matchList) {
+        if(matchList[i].changeTime) {
+            if(matchList[i].changeTime < Date.now()) {
+                matchList[i].canChange = true;
+            }
+            if(matchList[i].endTime < Date.now()) {
+                send(matchList[i].user, '聊天时间结束')
+                delete matchList[i]
+            }
+        } else {
+            if(matchList[i].endTime < Date.now()) {
+                var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    if(res1[0]) {
+                        res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
+                    } else {
+                        res1 = JSON.stringfy([matchList[i]]);
+                    }
+                    var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
+                    connection.query(querySel, (err, res2) => {
+                        if(err) {
+                            console.log(err)
+                            return;
+                        }
+                        send(matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
+                        askp[i] = matchList[i];
+                        delete matchList[i]
+                    })
+                })
+
+            }
+        }
     }
 }
 
