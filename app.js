@@ -139,7 +139,6 @@ class People {
         }
     }
     match(man, girl) {
-        console.log('match');
         if(this.matched[man]) {
             this.matched[man].insertNode(this.matched[man].tree, girl);
         } else {
@@ -788,7 +787,7 @@ function send(to, msg) {
         }
     }
     request(opts, (err, res2, body) => {
-        console.log(body);
+
     })
 }
 
