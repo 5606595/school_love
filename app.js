@@ -901,29 +901,29 @@ function check() {
             }
         } else {
             if(matchList[i].endTime < Date.now()) {
-                var querySel = "select matchUsers from record where weichatNum = '" + i + "' and allow = 1";
-                connection.query(querySel, (err, res1) => {
-                    if(err) {
-                        console.log(err);
-                        return;
-                    }
-                    if(res1[0]) {
-                        res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
-                    } else {
-                        res1 = JSON.stringify([matchList[i]]);
-                    }
-                    var querySel = "update record set matchUsers = '" + res1 + "' where weichatNum = '" + i + "' and allow = 1";
-                    connection.query(querySel, (err, res2) => {
-                        if(err) {
-                            console.log(err)
-                            return;
-                        }
+                // var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
+                // connection.query(querySel, (err, res1) => {
+                //     if(err) {
+                //         console.log(err);
+                //         return;
+                //     }
+                //     if(res1[0]) {
+                //         res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
+                //     } else {
+                //         res1 = JSON.stringify([matchList[i]]);
+                //     }
+                //     var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
+                //     connection.query(querySel, (err, res2) => {
+                //         if(err) {
+                //             console.log(err)
+                //             return;
+                //         }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
                         send(matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
                         askp[i] = matchList[i];
                         delete matchList[i]
-                    })
-                })
+                    // })
+                // })
 
             }
         }
