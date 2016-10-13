@@ -66,6 +66,10 @@ class People {
         }
     }
     matchCheck() {
+        console.log(this.man1)
+        console.log(this.girl1)
+        console.log(this.man2)
+        console.log(this.girl2)
         if(this.flag === 0) {
             for(var i in this.man1) {
                 for(var j in this.girl1) {
