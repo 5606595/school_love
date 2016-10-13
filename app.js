@@ -66,10 +66,11 @@ class People {
         }
     }
     matchCheck() {
-        console.log(this.man1)
-        console.log(this.girl1)
-        console.log(this.man2)
-        console.log(this.girl2)
+        console.log('man1' + this.man1)
+        console.log('girl1' + this.girl1)
+        console.log('man2' + this.man2)
+        console.log('girl2' + this.girl2)
+        console.log('matched' + this.matched)
         if(this.flag === 0) {
             for(var i in this.man1) {
                 for(var j in this.girl1) {
@@ -562,7 +563,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             if(err) {
                                 console.log(err);
                             }
-                            if(res1[0].gender === 0) {
+                            if(res1[0].gender == '0') {
                                 people.insertMan(result.FromUserName[0]);
                             } else {
                                 people.insertGirl(result.FromUserName[0]);
