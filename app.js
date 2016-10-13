@@ -562,6 +562,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(result.EventKey[0] === 'change') {
                     if(matchList[result.FromUserName[0]] && matchList[result.FromUserName[0]].canChange) {
+                        console.log('匹配次数' + people.matchedTimes[result.FromUserName[0]]);
                         if(people.matchedTimes[result.FromUserName[0]] > people.limit) {
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 您今日已达匹配次数上限, 匹配失败']);
                             var obj = matchList[result.FromUserName[0]].user;
