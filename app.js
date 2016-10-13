@@ -612,7 +612,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 console.log(err);
                                 return;
                             }
-                            var contact = res1[0];
+                            var contact = res1[0].contact;
                             console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 同意给予 '" + ask + "' 联系方式" );
                             send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
