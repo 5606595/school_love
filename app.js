@@ -453,21 +453,22 @@ app.post('/token', urlencodedParser, (req, res) => {
                                  }
                                  var xml = builder.buildObject(msg);
                                  res.send(xml)
+                            } else {
+                                waitVerify[wechatnum] = true;
+                                var msg = {
+                                    xml: {
+                                        ToUserName: result.FromUserName,
+                                        FromUserName: result.ToUserName,
+                                        CreateTime: [String(+new Date())],
+                                        MsgType: ['text'],
+                                        Content: ['请在输入框发送您的验证码']
+                                    }
+                                }
+                                var xml = builder.buildObject(msg);
+                                res.send(xml);
                             }
                         })
                     }
-                    waitVerify[wechatnum] = true;
-                    var msg = {
-                        xml: {
-                            ToUserName: result.FromUserName,
-                            FromUserName: result.ToUserName,
-                            CreateTime: [String(+new Date())],
-                            MsgType: ['text'],
-                            Content: ['请在输入框发送您的验证码']
-                        }
-                    }
-                    var xml = builder.buildObject(msg);
-                    res.send(xml);
                 }
                 if(result.EventKey[0] === 'match') {
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
