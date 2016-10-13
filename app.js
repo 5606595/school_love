@@ -368,6 +368,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送您的请求']);
+                    delete askp[result.FromUserName[0]];
                     res.send(xml);
                     return ;
                 }
@@ -605,7 +606,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
                         var ask = askp[result.FromUserName[0]];
-                        var querySel = "select contact from user where weichatNum = " + recep;
+                        var querySel = "select contact from user where weichatNum = '" + rece + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
                                 console.log(err);
@@ -615,6 +616,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 同意给予 '" + ask + "' 联系方式" );
                             send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                            delete recep[result.FromUserName[0]]
                             res.send(xml);
                             return ;
                         })
@@ -631,6 +633,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                         console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
                         send(ask, '对方不同意您的请求');
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                        delete recep[result.FromUserName[0]]
                         res.send(xml);
                         return ;
                     } else {
