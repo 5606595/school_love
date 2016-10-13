@@ -49,7 +49,7 @@ app.use(bodyParser());
 
 
 class People {
-    constructor(status) {
+    constructor(status, actid) {
         this.man1 = [];
         this.man2 = [];
         this.girl1 = [];
@@ -62,6 +62,7 @@ class People {
             this.matchedTimes = {};
         } else {
             this.contactList = {}
+            this.actid = actid;
         }
     }
     matchCheck() {
@@ -71,7 +72,11 @@ class People {
                     if(this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j])) {
 
                     } else {
-                        console.log(new Date().toLocaleString() + "   '" + this.man[i] + "'" + " matches '" + this.girl[j] + "' ");
+                        if(this.status == 0) {
+                            console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'");
+                        } else {
+                            console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'  actid: " + this.actid);
+                        }
                         this.match(this.man1[i], this.girl1[j]);
                         this.man1[i] = "";
                         this.girl1[j] = "";
@@ -99,7 +104,11 @@ class People {
                     if(this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j])) {
 
                     } else {
-                        console.log(new Date().toLocaleString() + "   '" + this.man[i] + "'" + " matches '" + this.girl[j] + "'  activity!!!!");
+                        if(this.status == 0) {
+                            console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'");
+                        } else {
+                            console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'  actid: " + this.actid);
+                        }
                         this.match(this.man2[i], this.girl2[j]);
                         this.man2[i] = "";
                         this.girl2[j] = "";
@@ -521,10 +530,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     var id = res1[0].activity;
                                     if(id > spe.length) {
                                         spe.length = id;
-                                        spe[id - 1] = new People(1);
+                                        spe[id - 1] = new People(1, id);
                                         spe[id - 1].startInterval();
                                     }
-                                    if(res1[0].gender === 0) {
+                                    if(res1[0].gender == '0') {
                                         spe[id - 1].insertMan(result.FromUserName[0])
                                     } else {
                                         spe[id - 1].insertGirl(result.FromUserName[0])
