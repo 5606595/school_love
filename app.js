@@ -384,7 +384,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                         }
                         var xml = builder.buildObject(msg);
-                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11')";
+                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1')";
                         connection.query(querySel, (err, res2) => {
                             if(err) {
                                 console.log(err);
@@ -404,7 +404,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                         }
                         var xml = builder.buildObject(msg);
-                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact) values (0, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11')";
+                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow) values (0, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1')";
                         connection.query(querySel, (err, res2) => {
                             if(err) {
                                 console.log(err);
