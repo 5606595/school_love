@@ -71,6 +71,7 @@ class People {
                     if(this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j])) {
 
                     } else {
+                        console.log(new Date().toLocaleString() + "   '" + this.man[i] + "'" + " matches '" + this.girl[j] + "' ");
                         this.match(this.man1[i], this.girl1[j]);
                         this.man1[i] = "";
                         this.girl1[j] = "";
@@ -98,6 +99,7 @@ class People {
                     if(this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j])) {
 
                     } else {
+                        console.log(new Date().toLocaleString() + "   '" + this.man[i] + "'" + " matches '" + this.girl[j] + "'  activity!!!!");
                         this.match(this.man2[i], this.girl2[j]);
                         this.man2[i] = "";
                         this.girl2[j] = "";
@@ -343,10 +345,12 @@ app.post('/token', urlencodedParser, (req, res) => {
             result = result.xml;
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
                 }
                 if(matchList[result.FromUserName[0]]) {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " -> '" + matchList[result.FromUserName[0]].user + "': " + result.Content[0]);
                     send(matchList[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
                     return;
@@ -537,6 +541,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
                         var obj = matchList[result.FromUserName[0]].user;
                         send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
+                        console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 换人对象: '" + obj + "'" );
                         delete matchList[obj];
                         delete matchList[result.FromUserName[0]];
                         var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
@@ -569,6 +574,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 return;
                             }
                             var contact = res1[0];
+                            console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 同意给予 '" + ask + "' 联系方式" );
                             send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
                             res.send(xml);
@@ -584,6 +590,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
                         var ask = askp[result.FromUserName[0]];
+                        console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
                         send(ask, '对方不同意您的请求');
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
                         res.send(xml);
@@ -853,6 +860,7 @@ function check() {
                 matchList[i].canChange = true;
             }
             if(matchList[i].endTime < Date.now()) {
+                console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' ");
                 send(matchList[i].user, '聊天时间结束')
                 delete matchList[i]
             }
@@ -867,7 +875,7 @@ function check() {
                     if(res1[0]) {
                         res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
                     } else {
-                        res1 = JSON.stringfy([matchList[i]]);
+                        res1 = JSON.stringify([matchList[i]]);
                     }
                     var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
                     connection.query(querySel, (err, res2) => {
@@ -875,6 +883,7 @@ function check() {
                             console.log(err)
                             return;
                         }
+                        console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
                         send(matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
                         askp[i] = matchList[i];
                         delete matchList[i]
