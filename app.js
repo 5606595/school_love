@@ -192,11 +192,11 @@ class People {
         } else {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 6 * 60 * 1000
+                endTime: Date.now() + 20 * 1000
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 6 * 60 * 1000
+                endTime: Date.now() + 20 * 1000
             }
         }
         send(man, "匹配成功, 现在可以开始聊天了");
@@ -207,7 +207,7 @@ class People {
 
 getToken();
 
-var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = [];
+var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = {};
 global.setInterval(check, 10000);
 people.startInterval();
 
@@ -543,15 +543,14 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     }
                                 } else {
                                     var id = res1[0].activity;
-                                    if(id > spe.length) {
-                                        spe.length = id;
-                                        spe[id - 1] = new People(1, id);
-                                        spe[id - 1].startInterval();
+                                    if(!spe[id]) {
+                                        spe[id] = new People(1, id);
+                                        spe[id].startInterval();
                                     }
                                     if(res1[0].gender == '0') {
-                                        spe[id - 1].insertMan(result.FromUserName[0])
+                                        spe[id].insertMan(result.FromUserName[0])
                                     } else {
-                                        spe[id - 1].insertGirl(result.FromUserName[0])
+                                        spe[id].insertGirl(result.FromUserName[0])
                                     }
                                 }
                                 res.send(xml);
