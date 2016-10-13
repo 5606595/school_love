@@ -354,46 +354,66 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
-                    var querySel = "select * from user where randomCode = '" + randomCode + "'";
-                    connection.query(querySel, (err, res1) => {
-                        if(err) {
-                            console.log(err)
-                            return;
-                        }
-                        if(!res1.length) {
-                            var msg = {
-                                xml: {
-                                    ToUserName: result.FromUserName,
-                                    FromUserName: result.ToUserName,
-                                    CreateTime: [String(+new Date())],
-                                    MsgType: ['text'],
-                                    Content: ['验证码错误']
-                                }
+                    // var querySel = "select * from user where randomCode = '" + randomCode + "'";
+                    // connection.query(querySel, (err, res1) => {
+                    //     if(err) {
+                    //         console.log(err)
+                    //         return;
+                    //     }
+                    //     if(!res1.length) {
+                    //         var msg = {
+                    //             xml: {
+                    //                 ToUserName: result.FromUserName,
+                    //                 FromUserName: result.ToUserName,
+                    //                 CreateTime: [String(+new Date())],
+                    //                 MsgType: ['text'],
+                    //                 Content: ['验证码错误']
+                    //             }
+                    //         }
+                    //         var xml = builder.buildObject(msg);
+                    //         res.send(xml);
+                    //     } else {
+                    if(randomCode == 1) {
+                         var msg = {
+                            xml: {
+                                ToUserName: result.FromUserName,
+                                FromUserName: result.ToUserName,
+                                CreateTime: [String(+new Date())],
+                                MsgType: ['text'],
+                                Content: ['验证成功']
                             }
-                            var xml = builder.buildObject(msg);
-                            res.send(xml);
-                        } else {
-                             var msg = {
-                                xml: {
-                                    ToUserName: result.FromUserName,
-                                    FromUserName: result.ToUserName,
-                                    CreateTime: [String(+new Date())],
-                                    MsgType: ['text'],
-                                    Content: ['验证成功']
-                                }
-                            }
-                            console.log('验证成功');
-                            var xml = builder.buildObject(msg);
-                            var querySel = "update user set weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomCode = '" + randomCode + "'";
-                            connection.query(querySel, (err, res2) => {
-                                if(err) {
-                                    console.log(err);
-                                    return;
-                                }
-                                res.send(xml)
-                            });
                         }
-                    })
+                        var xml = builder.buildObject(msg);
+                        var querySel = "update user set gender = 1, weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomCode = '" + randomCode + "'";
+                        connection.query(querySel, (err, res2) => {
+                            if(err) {
+                                console.log(err);
+                                return;
+                            }
+                            res.send(xml)
+                        });
+                    }
+                    if(randomCode == 0) {
+                        var msg = {
+                            xml: {
+                                ToUserName: result.FromUserName,
+                                FromUserName: result.ToUserName,
+                                CreateTime: [String(+new Date())],
+                                MsgType: ['text'],
+                                Content: ['验证成功']
+                            }
+                        }
+                        var xml = builder.buildObject(msg);
+                        var querySel = "update user set gender = 0, weichatNum = '" + result.FromUserName[0] + "', allow = 1 where randomCode = '" + randomCode + "'";
+                        connection.query(querySel, (err, res2) => {
+                            if(err) {
+                                console.log(err);
+                                return;
+                            }
+                            res.send(xml)
+                        });
+                    }
+                    // })
                 } else {
                     var msg = {
                         xml: {
