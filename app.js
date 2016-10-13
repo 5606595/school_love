@@ -605,7 +605,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 if(result.EventKey[0] === 'agree') {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
-                        var ask = askp[result.FromUserName[0]];
+                        var ask = recep[result.FromUserName[0]];
                         var querySel = "select contact from user where weichatNum = '" + rece + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
@@ -629,7 +629,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 if(result.EventKey[0] === 'disagree') {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
-                        var ask = askp[result.FromUserName[0]];
+                        var ask = recep[result.FromUserName[0]];
                         console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
                         send(ask, '对方不同意您的请求');
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
