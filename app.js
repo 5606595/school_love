@@ -406,7 +406,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                         }
                         var xml = builder.buildObject(msg);
-                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1')";
+                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow, activity, starttime, endtime) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1', 1, '2016-10-13 00:00:00', '2016-10-16 00:00:00')";
                         connection.query(querySel, (err, res2) => {
                             if(err) {
                                 console.log(err);
@@ -535,7 +535,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     }
                                 }
                                 var xml = builder.buildObject(msg);
-                                if(!res1[0].activity || Date.now() < res1[0].starttime || Date.now() > res1[0].endtime) {
+                                if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
                                     if(res1[0].gender == '0') {
                                         people.insertMan(result.FromUserName[0])
                                     } else {
