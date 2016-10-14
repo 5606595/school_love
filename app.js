@@ -182,11 +182,11 @@ class People {
         } else {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 20 * 1000
+                endTime: Date.now() + 6 * 60 * 1000
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 20 * 1000
+                endTime: Date.now() + 6 * 60 * 1000
             }
         }
         send(man, "匹配成功, 现在可以开始聊天了");
@@ -407,7 +407,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 return;
                             }
                             delete waitVerify[result.FromUserName[0]];
-                            res.send(xml);
+                            res.send(xml)
                         });
                     } else if(randomCode == 0) {
                         var msg = {
