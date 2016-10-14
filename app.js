@@ -406,10 +406,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 console.log(err);
                                 return;
                             }
-                            res.send(xml)
+                            delete waitVerify[result.FromUserName[0]];
+                            res.send(xml);
                         });
-                    }
-                    if(randomCode == 0) {
+                    } else if(randomCode == 0) {
                         var msg = {
                             xml: {
                                 ToUserName: result.FromUserName,
@@ -426,8 +426,13 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 console.log(err);
                                 return;
                             }
-                            res.send(xml)
+                            delete waitVerify[result.FromUserName[0]];
+                            res.send(xml);
                         });
+                    } else {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['验证码错误']);
+                        res.send(xml);
+                        return ;
                     }
                     // })
                 } else {
