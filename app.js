@@ -869,7 +869,7 @@ function send(to, msg, type) {
             json: {
                 "touser": to,
                 "msgtype": "image",
-                "text": {
+                "image": {
                     "media_id": msg
                 }
             }
