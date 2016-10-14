@@ -471,6 +471,27 @@ app.post('/token', urlencodedParser, (req, res) => {
                     return ;
                 }
             }
+            if(result.MsgType[0] === "voice") {
+                if(matchList[result.FromUserName[0]]) {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + matchList[result.FromUserName[0]].user + "' 发送语音");
+                    send(matchList[result.FromUserName[0]].user, result.MediaId[0], 2);
+                    res.send('success');
+                    return;
+                } else {
+                    var msg = {
+                        xml: {
+                            ToUserName: result.FromUserName,
+                            FromUserName: result.ToUserName,
+                            CreateTime: [String(+new Date())],
+                            MsgType: ['text'],
+                            Content: ['您未有匹配的ID']
+                        }
+                    }
+                    var xml = builder.buildObject(msg);
+                    res.send(xml)
+                    return ;
+                }
+            }
             if(result.MsgType[0] === 'event') {
                 if(result.EventKey[0] === 'verify') {
                     var wechatnum = result.FromUserName[0];
@@ -858,23 +879,43 @@ function send(to, msg, type) {
 
         })
     } else {
-        var opts = {
-            url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'Application/x-www-form-urlencoded'
-            },
-            json: {
-                "touser": to,
-                "msgtype": "image",
-                "image": {
-                    "media_id": msg
+        if(type === 1) {
+            var opts = {
+                url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'Application/x-www-form-urlencoded'
+                },
+                json: {
+                    "touser": to,
+                    "msgtype": "image",
+                    "image": {
+                        "media_id": msg
+                    }
                 }
             }
-        }
-        request(opts, (err, res2, body) => {
+            request(opts, (err, res2, body) => {
 
-        })
+            })
+        } else if(type === 2) {
+            var opts = {
+                url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'Application/x-www-form-urlencoded'
+                },
+                json: {
+                    "touser": to,
+                    "msgtype": "voice",
+                    "voice": {
+                        "media_id": msg
+                    }
+                }
+            }
+            request(opts, (err, res2, body) => {
+
+            })
+        }
     }
 }
 
