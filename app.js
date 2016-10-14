@@ -69,7 +69,7 @@ class People {
         if(this.flag === 0) {
             for(var i in this.man1) {
                 for(var j in this.girl1) {
-                    if(this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j])) {
+                    if(!this.man1[i] || !this.girl1[j] || (this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j]))) {
 
                     } else {
                         if(this.status == 0) {
@@ -101,7 +101,7 @@ class People {
         } else {
             for(var i in this.man2) {
                 for(var j in this.girl2) {
-                    if(this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j])) {
+                    if(!this.man2[i] || !this.girl2[j] || (this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j]))) {
 
                     } else {
                         if(this.status == 0) {
@@ -810,6 +810,10 @@ app.get('/veri', (req, res) => {
     } else {
         res.send('0')
     }
+})
+
+app.get('/personal', (req, res) => {
+
 })
 
 
