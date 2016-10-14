@@ -452,7 +452,7 @@ app.post('/token', urlencodedParser, (req, res) => {
             }
             if(result.MsgType[0] === "image") {
                 if(matchList[result.FromUserName[0]]) {
-                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + matchList[result.FromUserName[0]] + "' 发送图片");
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + matchList[result.FromUserName[0]].user + "' 发送图片");
                     send(matchList[result.FromUserName[0]].user, result.MediaId[0], 1);
                     res.send('success');
                     return;
@@ -868,7 +868,7 @@ function send(to, msg, type) {
                 "touser": to,
                 "msgtype": "image",
                 "image": {
-                    "media_id": "'" + msg + "'"
+                    "media_id": msg
                 }
             }
         }
