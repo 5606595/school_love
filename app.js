@@ -420,7 +420,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                         }
                         var xml = builder.buildObject(msg);
-                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow) values (0, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1')";
+                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow, activity, starttime, endtime) values (0, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1', 1, '2016-10-13 00:00:00', '2016-10-16 00:00:00')";
                         connection.query(querySel, (err, res2) => {
                             if(err) {
                                 console.log(err);
