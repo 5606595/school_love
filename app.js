@@ -452,9 +452,8 @@ app.post('/token', urlencodedParser, (req, res) => {
             }
             if(result.MsgType[0] === "image") {
                 if(matchList[result.FromUserName[0]]) {
-                    console.log(result)
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + matchList[result.FromUserName[0]] + "' 发送图片");
-                    send(matchList[result.FromUserName[0]], result.MediaId[0], 1);
+                    send(matchList[result.FromUserName[0]].user, result.MediaId[0], 1);
                     res.send('success');
                     return;
                 } else {
