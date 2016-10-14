@@ -66,16 +66,6 @@ class People {
         }
     }
     matchCheck() {
-        console.log('man1')
-        console.log(this.man1)
-        console.log('girl1')
-        console.log(this.girl1)
-        console.log('man2')
-        console.log(this.man2)
-        console.log('girl2')
-        console.log(this.girl2)
-        console.log('matched')
-        console.log(this.matched)
         if(this.flag === 0) {
             for(var i in this.man1) {
                 for(var j in this.girl1) {
@@ -565,7 +555,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                 }
                 if(result.EventKey[0] === 'change') {
                     if(matchList[result.FromUserName[0]] && matchList[result.FromUserName[0]].canChange) {
-                        console.log('匹配次数' + people.matchedTimes[result.FromUserName[0]]);
                         if(people.matchedTimes[result.FromUserName[0]] > people.limit) {
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 您今日已达匹配次数上限, 匹配失败']);
                             var obj = matchList[result.FromUserName[0]].user;
