@@ -858,6 +858,8 @@ function send(to, msg, type) {
 
         })
     } else {
+        console.log('photo')
+        console.log(msg)
         var opts = {
             url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
             method: 'POST',
