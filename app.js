@@ -450,6 +450,26 @@ app.post('/token', urlencodedParser, (req, res) => {
                     return ;
                 }
             }
+            if(result.MsgType[0] === "image") {
+                if(matchList[result.FromUserName[0]]) {
+                    send(matchList[result.FromUserName[0]], matchList.MediaId[0], 1);
+                    res.send('success');
+                    return;
+                } else {
+                    var msg = {
+                        xml: {
+                            ToUserName: result.FromUserName,
+                            FromUserName: result.ToUserName,
+                            CreateTime: [String(+new Date())],
+                            MsgType: ['text'],
+                            Content: ['您未有匹配的ID']
+                        }
+                    }
+                    var xml = builder.buildObject(msg);
+                    res.send(xml)
+                    return ;
+                }
+            }
             if(result.MsgType[0] === 'event') {
                 if(result.EventKey[0] === 'verify') {
                     var wechatnum = result.FromUserName[0];
@@ -817,24 +837,41 @@ app.get('/personal', (req, res) => {
 })
 
 
-function send(to, msg) {
-    var opts = {
-        url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
-        method: 'POST',
-        headers: {
-            'Content-Type': 'Application/x-www-form-urlencoded'
-        },
-        json: {
-            "touser": to,
-            "msgtype": "text",
-            "text": {
-                "content": msg
+function send(to, msg, type) {
+    if(arguments.length === 2) {
+        var opts = {
+            url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'Application/x-www-form-urlencoded'
+            },
+            json: {
+                "touser": to,
+                "msgtype": "text",
+                "text": {
+                    "content": msg
+                }
+            }
+        }
+        request(opts, (err, res2, body) => {
+
+        })
+    } else {
+        var opts = {
+            url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + token,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'Application/x-www-form-urlencoded'
+            },
+            json: {
+                "touser": to,
+                "msgtype": "image",
+                "text": {
+                    "media_id": msg
+                }
             }
         }
     }
-    request(opts, (err, res2, body) => {
-
-    })
 }
 
 // app.get('/sha', (req, res) => {
