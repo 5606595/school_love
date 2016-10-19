@@ -237,33 +237,19 @@ app.get('/create', (req, res) => {
                  "sub_button": [
                  {
                      "type": "click",
-                     "name": "验证",
-                     "key": "verify"
+                     "name": "随机匹配",
+                     "key": "match"
                  },
                  {
                      "type": "click",
-                     "name": "随机匹配",
-                     "key": "match"
+                     "name": "对方信息页",
+                     "key": "info"
                  },
                  {
                      "type": "click",
                      "name": "换人",
                      "key": "change"
                  },
-                 {
-                     "type": "click",
-                     "name": "话题卡",
-                     "key": "card"
-                 },
-                 {
-                     "type": "click",
-                     "name": "对方信息页",
-                     "key": "info"
-                 }]
-             },
-             {
-                 "name": "联谊活动",
-                 "sub_button": [
                  {
                      "type": "click",
                      "name": "同意",
@@ -273,12 +259,27 @@ app.get('/create', (req, res) => {
                      "type": "click",
                      "name": "不同意",
                      "key": "disagree"
-                 },
+                 }
+                ]
+             },
+             {
+                 "name": "近期活动",
+                 "sub_button": [
                  {
                      "type": "view",
-                     "name": "近期活动",
+                     "name": "加入活动",
                      // "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                      url: "http://www.campuslinker.com/weixin/activity"
+                 },
+                 {
+                     "type": "click",
+                     "name": "话题卡",
+                     "key": "card"
+                 },
+                 {
+                     "type": "click",
+                     "name": "匹配设置",
+                     "key": "set"
                  },
                  {
                      "type": "view",
@@ -290,8 +291,18 @@ app.get('/create', (req, res) => {
                  "name": "其他",
                  "sub_button": [
                      {
+                         "type": "view",
+                         "name": "注册",
+                         "url": "http://www.campuslinker.com/weixin/regist"
+                     },
+                     {
                          "type": "click",
-                         "name": "使用说明",
+                         "name": "验证",
+                         "key": "verify"
+                     },
+                     {
+                         "type": "click",
+                         "name": "联谊说明",
                          "key": "explain"
                      },
                      {
@@ -301,14 +312,10 @@ app.get('/create', (req, res) => {
                      },
                      {
                          "type": "click",
-                         "name": "联系我们",
+                         "name": "加入我们",
                          "key": "contact"
-                     },
-                     {
-                         "type": "view",
-                         "name": "注册",
-                         "url": "http://www.campuslinker.com/weixin/regist"
-                     }]
+                     }
+                 ]
              }
              ]
          }
