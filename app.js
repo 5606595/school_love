@@ -855,8 +855,23 @@ app.get('/veri', (req, res) => {
 })
 
 app.get('/personal', (req, res) => {
-
+    res.render('personal');
 })
+
+app.post('/persmod', (req, res) => {
+    var form = new formidable.IncomingForm();
+    form.encoding = 'utf-8';
+    form.uploadDir = __dirname + "/uploads/lifephoto";
+    form.on('file', (name, file) => {
+        var arr = file.path.split('/');
+        file.name = arr.slice(arr.length - 1, arr.length)[0];
+    })
+    form.maxFieldsSize = 2 * 1024 * 1024;
+    form.parse(req, (err, filed, file) => {
+        console.log(file);
+        res.send('1');
+    })
+});
 
 
 function send(to, msg, type) {
