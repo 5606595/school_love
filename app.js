@@ -312,7 +312,7 @@ app.get('/create', (req, res) => {
                      },
                      {
                          "type": "click",
-                         "name": "加入我们",
+                         "name": "联系我们",
                          "key": "contact"
                      }
                  ]
