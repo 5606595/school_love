@@ -37,7 +37,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '123456',
+    password: 'zxc',
     database: 'zuizui',
     dateStrings: true
 })
@@ -859,6 +859,11 @@ app.get('/personal', (req, res) => {
 })
 
 app.post('/persmod', (req, res) => {
+    console.log(req.body);
+    res.send('1');
+})
+
+app.post('/persphoto', (req, res) => {
     var form = new formidable.IncomingForm();
     form.encoding = 'utf-8';
     form.uploadDir = __dirname + "/uploads/lifephoto";
@@ -868,7 +873,7 @@ app.post('/persmod', (req, res) => {
     })
     form.maxFieldsSize = 2 * 1024 * 1024;
     form.parse(req, (err, filed, file) => {
-        console.log(file);
+        console.log(file)
         res.send('1');
     })
 });

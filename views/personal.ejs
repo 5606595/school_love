@@ -1096,11 +1096,13 @@
         function saveFun(e) {
             e.preventDefault();
             var height = divs[highinit].textContent;
-            heighttext.textContent = height;
-            heighttext.setAttribute('attr-num', height.slice(0, 3));
-            set.classList.add('disappear')
-            set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
-            cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            send('/weixin/persmod', 'POST', {height: height.slice(0, 3)}, 0, function() {
+                heighttext.textContent = height;
+                heighttext.setAttribute('attr-num', height.slice(0, 3));
+                set.classList.add('disappear')
+                set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
+                cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            })
         }
         function cancelFun(e) {
             set.classList.add('disappear')
@@ -1513,12 +1515,14 @@
                 text = text1 + "," + text2;
                 attr = highinit1 + "-" + highinit2;
             }
-            hometext.textContent = text;
-            hometext.setAttribute('attr-num', attr);
-            homeset.classList.add('downele');
-            cover.classList.add('disappear');
-            homeset.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", homesetFun, false);
-            cover.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", coverFun, false);
+            send('/weixin/persmod', 'POST', {hometown: text}, 0, function() {
+                hometext.textContent = text;
+                hometext.setAttribute('attr-num', attr);
+                homeset.classList.add('downele');
+                cover.classList.add('disappear');
+                homeset.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", homesetFun, false);
+                cover.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", coverFun, false);
+            })
         }
         function homesetFun() {
             homeset.removeEventListener('touchstart', selectInit)
@@ -1572,9 +1576,11 @@
         }
         function saveFun(e) {
             if(!save.getAttribute('disabled')) {
-                departmenttext.textContent = input.value;
-                extra.classList.add("downele");
-                extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                send('/weixin/persmod', 'POST', {department: input.value}, 0, function() {
+                    departmenttext.textContent = input.value;
+                    extra.classList.add("downele");
+                    extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                })
             }
         }
         function exitFun(e) {
@@ -1691,11 +1697,13 @@
         function saveFun(e) {
             e.preventDefault();
             var value = divs[highinit].textContent.slice(0, 3);
-            targettext.textContent = value;
-            targettext.setAttribute('attr-num', highinit);
-            set.classList.add('disappear')
-            set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
-            cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            send('/weixin/persmod', 'POST', {constellation: value}, 0, function() {
+                targettext.textContent = value;
+                targettext.setAttribute('attr-num', highinit);
+                set.classList.add('disappear')
+                set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
+                cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            })
         }
         function cancelFun(e) {
             set.classList.add('disappear')
@@ -1817,11 +1825,13 @@
         function saveFun(e) {
             e.preventDefault();
             var value = divs[highinit].textContent;
-            targettext.textContent = value;
-            targettext.setAttribute('attr-num', highinit);
-            set.classList.add('disappear')
-            set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
-            cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            send('/weixin/persmod', 'POST', {grade: value.slice(0, 4)}, 0, function() {
+                targettext.textContent = value;
+                targettext.setAttribute('attr-num', highinit);
+                set.classList.add('disappear')
+                set.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun, false);
+                cover.addEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", coverFun, false);
+            })
         }
         function cancelFun(e) {
             set.classList.add('disappear')
@@ -1880,9 +1890,11 @@
         }
         function saveFun(e) {
             if(!save.getAttribute('disabled')) {
-                introtext.textContent = textarea.value;
-                extra.classList.add("downele");
-                extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                send('/weixin/persmod', 'POST', {introduce: textarea.value}, 0, function() {
+                    introtext.textContent = textarea.value;
+                    extra.classList.add("downele");
+                    extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                })
             }
         }
         function exitFun(e) {
@@ -1936,9 +1948,11 @@
         }
         function saveFun(e) {
             if(!save.getAttribute('disabled')) {
-                wanttext.textContent = textarea.value;
-                extra.classList.add("downele");
-                extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                send('/weixin/persmod', 'POST', {expect: textarea.value}, 0, function() {
+                    wanttext.textContent = textarea.value;
+                    extra.classList.add("downele");
+                    extra.addEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun, false);
+                })
             }
         }
         function exitFun(e) {
@@ -1994,7 +2008,7 @@
         }
         function saveFun(e) {
             if(!save.getAttribute('disabled')) {
-                send('/persmod', "POST", files[0], 1, function() {
+                send('/weixin/persphoto', "POST", files[0], 1, function() {
                     var url = createObjectURL(files[0]);
                     photo.setAttribute("data-url", url);
                     extra.classList.add("downele");
