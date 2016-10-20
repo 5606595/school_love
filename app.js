@@ -704,11 +704,11 @@ app.post('/token', urlencodedParser, (req, res) => {
 })
 
 app.get('/regist', (req, res) => {
-    if(req.headers['user-agent'].match("MicroMessenger")) {
+    // if(req.headers['user-agent'].match("MicroMessenger")) {
         res.render('regist');
-    } else {
-        res.send("请用微信浏览器打开")
-    }
+    // } else {
+    //     res.send("请用微信浏览器打开")
+    // }
 })
 
 app.post('/getveri', (req, res) => {
