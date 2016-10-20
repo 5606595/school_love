@@ -37,7 +37,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'zxc',
     database: 'zuizui',
     dateStrings: true
 })
@@ -797,7 +797,7 @@ app.get('/activity', (req, res) => {
                 res.render('activity', {
                     display0: display0,
                     display1: display1,
-                    display2: display2,
+                    display2: display2
                 })
             }
         })
