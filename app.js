@@ -779,7 +779,7 @@ app.post('/reg', (req, res) => {
 })
 
 app.get('/activity', (req, res) => {
-    // if(req.headers['user-agent'].match("MicroMessenger")) {
+    if(req.headers['user-agent'].match("MicroMessenger")) {
         var querySel = 'select * from activity';
         connection.query(querySel, (err, res1) => {
             if(err) {
@@ -801,9 +801,9 @@ app.get('/activity', (req, res) => {
                 })
             }
         })
-    // } else {
-    //     res.send("请用微信浏览器打开");
-    // }
+    } else {
+        res.send("请用微信浏览器打开");
+    }
 })
 
 app.post("/actenroll", (req, res) => {
