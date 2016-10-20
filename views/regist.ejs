@@ -194,7 +194,7 @@
     input.addEventListener('change', function(e) {
         var files = e.target.files;
         if(files[0]) {
-            if(files[0].indexOf("image") !== -1) {
+            if(files[0].type.indexOf("image") !== -1) {
                 var name = files[0].name
                 filename.innerHTML = name;
             } else {
