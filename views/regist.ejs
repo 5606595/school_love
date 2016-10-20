@@ -152,7 +152,7 @@
     }, false);
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-        console.log(input.value);
+        console.log(input.files);
         if(!document.querySelector("#phone").value || !document.querySelector("#verify").value || !document.querySelector("#code").value || !document.querySelector("#name").value || !document.querySelector(".gender input:checked") || !document.querySelector(".select1").value || !document.querySelector(".select2").value || !document.querySelector(".select3").value || !document.querySelector("#photo").value) {
             alert('您有未填写信息')
         } else {
