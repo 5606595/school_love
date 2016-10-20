@@ -102,7 +102,7 @@
             <!--<input type="file">-->
             <div class="fileCont">
                 <input type="file" class="file" id="photo" name="photo">
-                <h6>
+                <h6 id="filename">
                     选择文件<span>(请手持身份证/一卡通正面照片，露出双肩和面部，要求清晰，5M以内)</span>
                 </h6>
             </div>
@@ -122,6 +122,8 @@
     var option = "";
     var select1 = document.querySelector(".select1");
     var select2 = document.querySelector(".select2");
+    var input = document.getElementById("photo")
+    var filename = document.getElemenById("filename");
     btn.addEventListener("touchstart", function(event) {
         event.preventDefault();
         var phoneNum = document.querySelector("#phone").value;
@@ -188,6 +190,18 @@
             option = "<option value=''>请选择</option>"
         }
         select2.innerHTML = option;
+    }, false);
+    input.addEventListener('change', function(e) {
+        var files = e.target.files;
+        if(files[0]) {
+            if(files[0].indexOf("image") !== -1) {
+                var name = files[0].name
+                filename.innerHTML = name;
+            } else {
+                alert("请上传照片")
+                e.preventDefault();
+            }
+        }
     }, false);
     function dis() {
         if(time > 0) {

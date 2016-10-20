@@ -24,11 +24,16 @@
         img {
             width: 100%;
             height: 100%;
+            border: 0px;
+            outline: none;
         }
         .apply {
             float: right;
             color: #2db7f5;
             font-weight: normal;
+        }
+        .apply[disabled] {
+            color: #DDD;
         }
         .title {
             color: #6a6a6a;
@@ -72,8 +77,9 @@
 </head>
 <body>
     <div id="container">
-        <% if(act) {%>
-            <% act.forEach(function(activity) {%>
+        <% if(display1) {%>
+            <h2>开始报名</h2>
+            <% display1.forEach(function(activity) {%>
                 <div class="card">
                     <div class="pic">
                         <img src="/img/<%= activity.img %>" alt="">
@@ -103,41 +109,107 @@
                 </div>
             <% }) %>
         <% } %>
+        <% if(display2) {%>
+            <h2>截止报名</h2>
+            <% display2.forEach(function(activity) {%>
+                <div class="card">
+                    <div class="pic">
+                        <img src="/img/<%= activity.img %>" alt="">
+                    </div>
+                    <div class="title">
+                        <%= activity.title %>
+                        <span class="apply" disabled="disabled">
+                            报名
+                        </span>
+                        <span class="id"><%= activity.id %></span>
+                        <h3 class="num">
+                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
+                        </h3>
+                    </div>
+                    <p class="detail">
+                        <%= activity.detail %>
+                    </p>
+                    <h3 class="deadline">
+                        报名截止日期: <%= activity.deadline %>
+                    </h3>
+                    <h3 class="starttime">
+                        活动开始日期: <%= activity.starttime %>
+                    </h3>
+                    <h3 class="endtime">
+                        活动截止日期: <%= activity.endtime %>
+                    </h3>
+                </div>
+            <% }) %>
+        <% } %>
+        <% if(display0) {%>
+            <h2>已结束活动</h2>
+            <% display0.forEach(function(activity) {%>
+                <div class="card">
+                    <div class="pic">
+                        <img src="/img/<%= activity.img %>" alt="">
+                    </div>
+                    <div class="title">
+                        <%= activity.title %>
+                        <span class="id"><%= activity.id %></span>
+                        <h3 class="num">
+                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
+                        </h3>
+                    </div>
+                    <p class="detail">
+                        <%= activity.detail %>
+                    </p>
+                    <h3 class="deadline">
+                        报名截止日期: <%= activity.deadline %>
+                    </h3>
+                    <h3 class="starttime">
+                        活动开始日期: <%= activity.starttime %>
+                    </h3>
+                    <h3 class="endtime">
+                        活动截止日期: <%= activity.endtime %>
+                    </h3>
+                </div>
+            <% }) %>
+        <% } %>
     </div>
 </body>
 <script>
     var container = document.getElementById("container");
     container.addEventListener("touchstart", function(event) {
         if(event.target.className === "apply") {
-            var node = event.target.parentNode
-            var deadline = node.getElementByClassName("deadline")[0].textContent;
-            if(+new Date() > +new Date(deadline)) {
-                alert("已超过报名截止时间,报名失败")
-                return;
-            }
-            var regnum = node.getElementByClassName("regnum").textContent;
-            var maxnum = node.getElementByClassName("maxnum").textContent;
-            if(regnum >= maxnum) {
-                alert("报名人数已满,报名失败");
-                return;
-            }
-            var actid = node.getElementsByClassName("id")[0].textContent;
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', '/weixin/actenroll', true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.send("actid=" + actid);
-            xhr.onreadystatechange = function() {
-                if(xhr.readyState === 4) {
-                    if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
-                        if(xhr.responseText == '1') {
-                            alert("报名成功")
-                        } else if(xhr.responseText == '2') {
-                            alert("你已报名其他活动, 不能再进行申请");
-                        } else {
-                            alert("报名失败");
+            if(!event.target.getAttribute('disabled')) {
+                var node = event.target.parentNode.parentNode;
+                var deadline = node.getElementsByClassName("deadline")[0].textContent;
+                if(+new Date() > +new Date(deadline)) {
+                    alert("已超过报名截止时间,报名失败")
+                    return;
+                }
+                var regnum = node.getElemenstByClassName("regnum")[0].textContent;
+                var maxnum = node.getElementsByClassName("maxnum")[0].textContent;
+                if(regnum >= maxnum) {
+                    alert("报名人数已满,报名失败");
+                    return;
+                }
+                var actid = node.getElementsByClassName("id")[0].textContent;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/weixin/actenroll', true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.send("actid=" + actid);
+                xhr.onreadystatechange = function() {
+                    if(xhr.readyState === 4) {
+                        if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                            if(xhr.responseText == '1') {
+                                alert("报名成功")
+                                node.getElemenstByClassName("regnum")[0].textContent = Number(node.getElementsByClassName("regnum")[0].textContent) + 1;
+                            } else if(xhr.responseText == '2') {
+                                alert("你已报名其他活动, 不能再进行申请");
+                            } else {
+                                alert("报名失败");
+                            }
                         }
                     }
                 }
+            } else {
+                alert("报名时间不符合条件,报名失败");
             }
         }
     }, false);

@@ -23,7 +23,7 @@ var client = new TopClient({
 });
 var formidable = require('formidable');
 
-var askp = {}, recep = {}, matchList = {}, waitList = {};
+var askp = {}, recep = {}, matchList = {}, waitList = {}, uv = 0, pv = 0;
 
 app.use(session({
     secret: 'zuizui-lianyi',
@@ -37,7 +37,7 @@ app.use(session({
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'zxc',
+    password: '',
     database: 'zuizui',
     dateStrings: true
 })
@@ -779,20 +779,31 @@ app.post('/reg', (req, res) => {
 })
 
 app.get('/activity', (req, res) => {
-    if(req.headers['user-agent'].match("MicroMessenger")) {
-        var querySel = 'select * from activity where display = 1';
+    // if(req.headers['user-agent'].match("MicroMessenger")) {
+        var querySel = 'select * from activity';
         connection.query(querySel, (err, res1) => {
             if(err) {
                 console.log(err);
             } else {
+                var display1 = res1.filter((data) => {
+                    return data.display == 1;
+                })
+                var display2 = res1.filter((data) => {
+                    return data.display == 2;
+                })
+                var display0 = res1.filter((data) => {
+                    return data.display == 0;
+                })
                 res.render('activity', {
-                    act: res1
+                    display0: display0,
+                    display1: display1,
+                    display2: display2,
                 })
             }
         })
-    } else {
-        res.send("请用微信浏览器打开");
-    }
+    // } else {
+    //     res.send("请用微信浏览器打开");
+    // }
 })
 
 app.post("/actenroll", (req, res) => {
