@@ -23,7 +23,7 @@ var client = new TopClient({
 });
 var formidable = require('formidable');
 
-var askp = {}, recep = {}, matchList = {};
+var askp = {}, recep = {}, matchList = {}, waitList = {};
 
 app.use(session({
     secret: 'zuizui-lianyi',
@@ -189,6 +189,8 @@ class People {
                 endTime: Date.now() + 6 * 60 * 1000
             }
         }
+        delete waitList[man];
+        delete waitList[girl];
         send(man, "匹配成功, 现在可以开始聊天了");
         send(girl, "匹配成功, 现在可以开始聊天了");
     }
@@ -546,6 +548,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                         res.send(xml);
                         return ;
                     }
+                    if(waitList[result.FromUserName[0]]) {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您已在匹配队列,请等待......']);
+                        res.send(xml);
+                        return ;
+                    }
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
                         if(err) {
@@ -586,8 +593,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
                                     if(res1[0].gender == '0') {
                                         people.insertMan(result.FromUserName[0])
+                                        waitList[result.FromUserName[0]] = 1;
                                     } else {
                                         people.insertGirl(result.FromUserName[0])
+                                        waitList[result.FromUserName[0]] = 1;
                                     }
                                 } else {
                                     var id = res1[0].activity;
@@ -597,8 +606,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     }
                                     if(res1[0].gender == '0') {
                                         spe[id].insertMan(result.FromUserName[0])
+                                        waitList[result.FromUserName[0]] = 1;
                                     } else {
                                         spe[id].insertGirl(result.FromUserName[0])
+                                        waitList[result.FromUserName[0]] = 1;
                                     }
                                 }
                                 res.send(xml);
@@ -632,8 +643,10 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 }
                                 if(res1[0].gender == '0') {
                                     people.insertMan(result.FromUserName[0]);
+                                    waitList[result.FromUserName[0]] = 1;
                                 } else {
                                     people.insertGirl(result.FromUserName[0]);
+                                    waitList[result.FromUserName[0]] = 1;
                                 }
                                 res.send(xml);
                                 return ;
