@@ -933,7 +933,7 @@ app.post('/persphoto', upload2.single('file'), (req, res) => {
 
 app.get('/wxcode', (req, res) => {
     var code = req.query.wxcode;
-    code = code.slice(1, code.length);
+    code = code.slice(6, code.length);
     console.log(code);
     var option = {
         url: "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f&code=" + code + "&grant_type=authorization_code"
