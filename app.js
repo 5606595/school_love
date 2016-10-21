@@ -750,7 +750,6 @@ app.get('/regist', (req, res) => {
 })
 
 app.post('/getveri', (req, res) => {
-    console.log(req.session);
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var phoneNum = req.body.phoneNum;
         var querySel = "select * from user where phoneNum = '" + phoneNum + "'";
@@ -775,33 +774,40 @@ app.post('/getveri', (req, res) => {
 
 app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
-        var photo = req.file.name
-        var phoneNum = req.body.phoneNum;
-        var regCode = req.body.regCode;
-        if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
-            var code = req.body.code;
-            var name = req.body.name;
-            var gender = req.body.gender;
-            var school = req.body.school;
-            var schema = req.body.schema;
-            var contact = req.body.contact;
-            if (!contact) {
-                contact = phoneNum;
-            }
-            if (code && school && schema) {
-                var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
-                if (reg.test(code)) {
-                    var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
-                    connection.query(querySel, (err, res1) => {
-                        if (err) {
-                            console.log(err)
-                            return;
-                        }
-                        res.redirect('/weixin/success');
-                    })
+        var weichatnum = req.session.wechatnum;
+        if(wechatnum) {
+            var photo = req.file.name
+            var phoneNum = req.body.phoneNum;
+            var regCode = req.body.regCode;
+            if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
+                var code = req.body.code;
+                var name = req.body.name;
+                var gender = req.body.gender;
+                var school = req.body.school;
+                var schema = req.body.schema;
+                var contact = req.body.contact;
+                if (!contact) {
+                    contact = phoneNum;
+                }
+                if (code && school && schema) {
+                    var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
+                    if (reg.test(code)) {
+                        var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
+                        connection.query(querySel, (err, res1) => {
+                            if (err) {
+                                console.log(err)
+                                return;
+                            }
+                            res.redirect('/weixin/success');
+                        })
+                    }
                 }
             }
+        } else {
+            res.send('微信认证错误')
         }
+    } else {
+        res.send('请用微信浏览器打开')
     }
 })
 
