@@ -750,6 +750,7 @@ app.get('/regist', (req, res) => {
 })
 
 app.post('/getveri', (req, res) => {
+    console.log(req.session);
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var phoneNum = req.body.phoneNum;
         var querySel = "select * from user where phoneNum = '" + phoneNum + "'";
@@ -771,8 +772,6 @@ app.post('/getveri', (req, res) => {
         })
     }
 })
-
-
 
 app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
