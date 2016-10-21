@@ -939,8 +939,11 @@ app.get('/wxcode', (req, res) => {
         url: "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f&code=" + code + "&grant_type=authorization_code"
     }
     request(option, (err, res1, body) => {
-        console.log(body);
-        res.send('1');
+        if(body.openid) {
+            req.session.wechatnum = body.openid
+            res.send('1');
+        }
+        res.send('0');
     });
 })
 

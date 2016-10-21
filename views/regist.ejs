@@ -113,12 +113,22 @@
     </form>
 </body>
 <script>
-    var xml = new XMLHttpRequest();
-    xml.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
-    xml.send(null);
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
+    xhr.send(null);
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === 4) {
+            if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                if(xhr.responseText === '0') {
+                    alert("微信认证失败");
+                }
+            }
+        }
+    }
     var index = {
         tj: ['天津大学', '南开大学']
     }
+
     var btn = document.querySelector("#get");
     var time = 60;
     var form = document.querySelector("#sub");
