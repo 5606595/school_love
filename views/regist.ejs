@@ -114,7 +114,7 @@
 </body>
 <script>
     var xml = new XMLHttpRequest();
-    xml.open('GET', '/weixin/wxcode?wxcode=' + location.href, true);
+    xml.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
     xml.send(null);
     var index = {
         tj: ['天津大学', '南开大学']

@@ -398,6 +398,7 @@ app.post('/token', urlencodedParser, (req, res) => {
     })
     req.on('end', (chunk) => {
         parseString(str, (err, result) => {
+            console.log(result);
             result = result.xml;
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
@@ -932,7 +933,11 @@ app.post('/persphoto', upload2.single('file'), (req, res) => {
 });
 
 app.get('/wxcode', (req, res) => {
-    console.log(req.query);
+    var code = req.query.wxcode;
+    code = code.slice(1, code.length);
+    var option = {
+        url: ""
+    }
     res.send('1');
 })
 
