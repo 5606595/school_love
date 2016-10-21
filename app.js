@@ -774,8 +774,8 @@ app.post('/getveri', (req, res) => {
 
 app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
-        var weichatnum = req.session.wechatnum;
-        if(wechatnum) {
+        var weichatNum = req.session.wechatnum;
+        if(wechatNum) {
             var photo = req.file.name
             var phoneNum = req.body.phoneNum;
             var regCode = req.body.regCode;
