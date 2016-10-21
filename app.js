@@ -939,8 +939,8 @@ app.get('/wxcode', (req, res) => {
     }
     request(option, (err, res1, body) => {
         console.log(body);
+        res.send('1');
     });
-    res.send('1');
 })
 
 
