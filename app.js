@@ -22,6 +22,44 @@ var client = new TopClient({
     'REST_URL': 'http://gw.api.taobao.com/router/rest'
 });
 var formidable = require('formidable');
+var multer = require('multer');
+
+var storage1 = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, '/home/ubuntu/zuizui/zuizui/www/img/valid')
+    }
+})
+var storage2 = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, __dirname + '/uploads/lifephoto')
+    }
+})
+var upload1 = multer({
+    storage: storage1,
+    limits: {
+        fileSize: 5 * 1000 * 1000,
+        files: 1
+    },
+    fileFilter: function(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(null, false);
+        }
+        return cb(null, true)
+    }
+})
+var upload2 = multer({
+    storage: storage2,
+    limits: {
+        fileSize: 5 * 1000 * 1000,
+        files: 1
+    },
+    fileFilter: function(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(null, false);
+        }
+        return cb(null, true)
+    }
+})
 
 var askp = {}, recep = {}, matchList = {}, waitList = {}, uv = 0, pv = 0;
 
@@ -270,8 +308,8 @@ app.get('/create', (req, res) => {
                  {
                      "type": "view",
                      "name": "加入活动",
-                     // "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
-                     url: "http://www.campuslinker.com/weixin/activity"
+                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
+                     // url: "http://www.campuslinker.com/weixin/activity"
                  },
                  {
                      "type": "click",
@@ -295,7 +333,7 @@ app.get('/create', (req, res) => {
                      {
                          "type": "view",
                          "name": "注册",
-                         "url": "http://www.campuslinker.com/weixin/regist"
+                         "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/regist&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                      },
                      {
                          "type": "click",
@@ -704,11 +742,11 @@ app.post('/token', urlencodedParser, (req, res) => {
 })
 
 app.get('/regist', (req, res) => {
-    // if(req.headers['user-agent'].match("MicroMessenger")) {
+    if(req.headers['user-agent'].match("MicroMessenger")) {
         res.render('regist');
-    // } else {
-    //     res.send("请用微信浏览器打开")
-    // }
+    } else {
+        res.send("请用微信浏览器打开")
+    }
 })
 
 app.post('/getveri', (req, res) => {
@@ -734,47 +772,37 @@ app.post('/getveri', (req, res) => {
     }
 })
 
-app.post('/reg', (req, res) => {
+
+
+app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
-        var form = new formidable.IncomingForm();
-        form.encoding = 'utf-8';
-        form.uploadDir = "/home/ubuntu/zuizui/people";
-        form.on('file', (name, file) => {
-            var arr = file.path.split('/');
-            file.name = arr.slice(arr.length - 1, arr.length)[0];
-        })
-        form.maxFieldsSize = 2 * 1024 * 1024;
-        form.parse(req, (err, filed, file) => {
-            req.body = filed;
-            req.file = file;
-            var photo = req.file.photo.name
-            var phoneNum = req.body.phoneNum;
-            var regCode = req.body.regCode;
-            if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
-                var code = req.body.code;
-                var name = req.body.name;
-                var gender = req.body.gender;
-                var school = req.body.school;
-                var schema = req.body.schema;
-                var contact = req.body.contact;
-                if (!contact) {
-                    contact = phoneNum;
-                }
-                if (code && school && schema) {
-                    var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
-                    if (reg.test(code)) {
-                        var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
-                        connection.query(querySel, (err, res1) => {
-                            if (err) {
-                                console.log(err)
-                                return;
-                            }
-                            res.redirect('/weixin/success');
-                        })
-                    }
+        var photo = req.file.name
+        var phoneNum = req.body.phoneNum;
+        var regCode = req.body.regCode;
+        if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
+            var code = req.body.code;
+            var name = req.body.name;
+            var gender = req.body.gender;
+            var school = req.body.school;
+            var schema = req.body.schema;
+            var contact = req.body.contact;
+            if (!contact) {
+                contact = phoneNum;
+            }
+            if (code && school && schema) {
+                var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
+                if (reg.test(code)) {
+                    var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "');";
+                    connection.query(querySel, (err, res1) => {
+                        if (err) {
+                            console.log(err)
+                            return;
+                        }
+                        res.redirect('/weixin/success');
+                    })
                 }
             }
-        })
+        }
     }
 })
 
@@ -894,20 +922,19 @@ app.post('/persmod', (req, res) => {
     res.send('1');
 })
 
-app.post('/persphoto', (req, res) => {
-    var form = new formidable.IncomingForm();
-    form.encoding = 'utf-8';
-    form.uploadDir = __dirname + "/uploads/lifephoto";
-    form.on('file', (name, file) => {
-        var arr = file.path.split('/');
-        file.name = arr.slice(arr.length - 1, arr.length)[0];
-    })
-    form.maxFieldsSize = 2 * 1024 * 1024;
-    form.parse(req, (err, filed, file) => {
-        console.log(file)
+app.post('/persphoto', upload2.single('file'), (req, res) => {
+    if(req.file) {
+        var name = req.file.filename;
         res.send('1');
-    })
+    } else {
+        res.send('0')
+    }
 });
+
+app.get('/wxcode', (req, res) => {
+    console.log(req.query);
+    res.send('1');
+})
 
 
 function send(to, msg, type) {

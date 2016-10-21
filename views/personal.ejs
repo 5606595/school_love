@@ -941,7 +941,7 @@
         '            </div>'+
         '            <div id="upload">'+
         '                <input type="file">'+
-        '                <span>选择图片</span>'+
+        '                <span>选择照片(5M以内)</span>'+
         '            </div>'+
         '        </div>'+
         '    </div>'
@@ -1989,9 +1989,13 @@
             files = e.target.files;
             if(files[0]) {
                 if(files[0].type.indexOf("image") !== -1) {
-                    var url = createObjectURL(files[0]);
-                    img.setAttribute("src", url);
-                    save.removeAttribute('disabled');
+                    if(files[0].size < 5 * 1000 * 1000) {
+                        var url = createObjectURL(files[0]);
+                        img.setAttribute("src", url);
+                        save.removeAttribute('disabled');
+                    } else {
+                        alert("文件过大,请重新选择");
+                    }
                 } else {
                     alert("请上传照片")
                 }
@@ -2008,7 +2012,7 @@
         }
         function saveFun(e) {
             if(!save.getAttribute('disabled')) {
-                send('/persphoto', "POST", files[0], 1, function() {
+                send('/weixin/persphoto', "POST", files[0], 1, function() {
                     var url = createObjectURL(files[0]);
                     photo.setAttribute("data-url", url);
                     extra.classList.add("downele");
