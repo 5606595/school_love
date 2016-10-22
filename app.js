@@ -283,7 +283,7 @@ app.get('/create', (req, res) => {
                  {
                      "type": "click",
                      "name": "对方信息页",
-                     "key": "info"
+                     "key": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/otherperson&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                  },
                  {
                      "type": "click",
@@ -309,7 +309,6 @@ app.get('/create', (req, res) => {
                      "type": "view",
                      "name": "加入活动",
                      "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
-                     // url: "http://www.campuslinker.com/weixin/activity"
                  },
                  {
                      "type": "click",
@@ -400,7 +399,7 @@ app.post('/token', urlencodedParser, (req, res) => {
         parseString(str, (err, result) => {
             result = result.xml;
             if(result.MsgType[0] === 'text') {
-                if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
+                if(askp[result.FromUserName[0]] && result.Content[0] == "索要联系方式") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
@@ -785,7 +784,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 var name = req.body.name;
                 var gender = req.body.gender;
                 var school = req.body.school;
-                var schema = req.body.schema;
+                var degree = req.body.degree;
                 var contact = req.body.contact;
                 if (!contact) {
                     contact = phoneNum;
@@ -793,7 +792,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 if (code && school && schema && photo) {
                     var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
                     if (reg.test(code)) {
-                        var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
+                        var querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
                         connection.query(querySel, (err, res1) => {
                             if (err) {
                                 console.log(err)
@@ -867,8 +866,6 @@ app.post("/actenroll", (req, res) => {
                         if(res2.length) {
                             if(+new Date() >= +new Date(res2[0].deadline)) {
                                 res.send('3')
-                            } else if(res2[0].regnum >= res2[0].maxnum) {
-                                res.send('4')
                             } else {
                                 var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "');";
                                 connection.query(querySel1, (err, res3) => {
@@ -949,11 +946,40 @@ app.get('/personalinfo', (req, res) => {
     }
 })
 
+app.get('/otherperson', (req, res) => {
+    res.render('otherperson')
+})
+
+app.get('/otherinfo', (req, res) => {
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        if (req.session.wechatNum) {
+            if(matchList[req.session.wechatNum]) {
+                var querySel = "select * from user where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    if(res1[0]) {
+                        res.send(JSON.stringify(res1[0]))
+                    }
+                });
+            } else {
+                res.send('3')
+            }
+        } else {
+            res.send('2');
+        }
+    } else {
+        res.send('0');
+    }
+})
+
 
 app.post('/persmod', (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         if(req.session.wechatNum) {
-            console.log(req.body);
             var body = req.body;
             if(body.height) {
                 var querySel = "update user set height = " + body.height + " where weichatNum = '" + req.session.wechatNum + "'";
@@ -1068,7 +1094,6 @@ app.post('/persphoto', upload2.single('file'), (req, res) => {
     } else {
         res.send('0')
     }
-
 });
 
 app.get('/wxcode', (req, res) => {
@@ -1215,7 +1240,8 @@ function check() {
             }
             if(matchList[i].endTime < Date.now()) {
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' ");
-                send(matchList[i].user, '聊天时间结束')
+                send(matchList[i].user, '聊天时间结束, 回复"索要联系方式"可向对方索要联系方式')
+                askp[i] = matchList[i].user;
                 delete matchList[i]
             }
         } else {
@@ -1238,7 +1264,7 @@ function check() {
                 //             return;
                 //         }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
-                        send(matchList[i].user, '聊天时间结束, 回复1可向对方索要联系方式')
+                        send(matchList[i].user, '聊天时间结束, 回复"索要联系方式"可向对方索要联系方式')
                         askp[i] = matchList[i].user;
                         delete matchList[i]
                     // })

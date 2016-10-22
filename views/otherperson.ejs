@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta name="viewport" content="initial-scale=1.0, max-scale=1.0, user-scalable=0, width=device-width;">
+    <style>
+        body,html {
+            margin: 0;
+            padding: 0;
+            background: #f5f5f9;
+        }
+        h2 {
+            color: #108ee9;
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+        h6 {
+            color: #9e9e9f;
+            text-align: center;
+            font-size: 10px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        #container {
+            background: white;
+        }
+        .card {
+            border: 1px solid #e9e9e9;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .left {
+            float: left;
+        }
+        .right {
+            float: right;
+        }
+        .pic {
+            width: 100%;
+        }
+        img {
+            width: 100%;
+            border: 0px;
+            outline: none;
+        }
+        .apply {
+            float: right;
+            color: #2db7f5;
+            font-weight: normal;
+        }
+        .apply[disabled] {
+            color: #DDD;
+        }
+        .title {
+            color: #6a6a6a;
+            font-size: 13px;
+            padding: 20px 20px 20px 20px;
+            margin: 0;
+            overflow: hidden;
+            border-bottom: 1px solid #e9e9e9;
+        }
+        .detail {
+            color: #696969;
+            font-size: 12px;
+            padding: 10px 20px 15px 20px;
+            margin: 8px 0 0 0;
+        }
+        .hr {
+            height: 1px;
+            width: 100%;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+    <h2>
+        对方资料
+    </h2>
+    <h6>
+        other information
+    </h6>
+    <div id="container">
+        <div class="card">
+            <div class="title">
+                <span class="left">学校</span>
+                <span class="right" id="schooltext"></span>
+            </div>
+            <div class="title">
+                <span class="left">学历</span>
+                <span class="right" id="degreetext"></span>
+            </div>
+            <div class="title">
+                <span class="left">身高</span>
+                <span class="right" id="heighttext">对方未填写</span>
+            </div>
+            <div class="title">
+                <span class="left">
+                    家乡
+                </span>
+                <span class="right" id="hometext">
+                    对方未填写
+                </span>
+            </div>
+            <div class="title">
+                <span class="left">
+                    星座
+                </span>
+                <span class="right" id="constellationtext">
+                    对方未填写
+                </span>
+            </div>
+            <div class="title">
+                <span class="left">
+                    学院
+                </span>
+                <span class="right" id="departmenttext">
+                    对方未填写
+                </span>
+            </div>
+            <div class="title">
+                <span class="left">
+                    年级
+                </span>
+                <span class="right" id="gradetext">
+                    2014级
+                </span>
+            </div>
+            <div class="title">自我介绍</div>
+            <div class="detail" id="introtext">对方未填写</div>
+            <div class="hr"></div>
+            <div class="title">对TA的期待</div>
+            <div class="detail" id="wanttext">对方未填写</div>
+            <div class="hr"></div>
+            <div class="title">生活照</div>
+            <div class="pic" id="photo"></div>
+        </div>
+    </div>
+</body>
+<script>
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
+    xhr1.send(null);
+    xhr1.onreadystatechange = function() {
+        if (xhr1.readyState === 4) {
+            if ((xhr1.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                if (xhr1.responseText === '0') {
+                    alert("微信认证失败");
+                } else {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', '/weixin/otherinfo', false);
+                    xhr.send(null);
+                    xhr.onreadystatechange = function() {
+                        if(xhr.readyState === 4) {
+                            if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                                if(xhr.responseText == '2') {
+                                    alert("您的账号为注册/通过")
+                                } else if(xhr.responseText == '3') {
+                                    alert("您未有匹配的对象");
+                                } else if(xhr.responseText == '0') {
+                                    alert("微信认证失败")
+                                } else {
+                                    var json = JSON.parse(xhr.responseText);
+                                    document.getElementById("schooltext").textContent = json.school;
+                                    document.getElementById("degreetext").textContent = json.degree;
+                                    if(json.height) {
+                                        document.getElementById("heighttext").textContent = json.height;
+                                    }
+                                    if(json.hometown) {
+                                        document.getElementById("hometext").textContent = json.hometown;
+                                    }
+                                    if(json.constellation) {
+                                        document.getElementById("constellationtext").textContent = json.constellation;
+                                    }
+                                    if(json.department) {
+                                        document.getElementById("departmenttext").textContent = json.department;
+                                    }
+                                    if(json.grade) {
+                                        document.getElementById("gradetext").textContent = json.grade;
+                                    }
+                                    if(json.introduce) {
+                                        document.getElementById("introtext").textContent = json.introduce;
+                                    }
+                                    if(json.expect) {
+                                        document.getElementById("wanttext").textContent = json.expect;
+                                    }
+                                    if(json.personalphoto) {
+                                        var html = "<img src='" + json.personalphoto + "' alt='图片已损坏'>"
+                                        document.getElementById("photo").innerHTML = html;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+</script>
+</html>

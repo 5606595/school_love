@@ -89,9 +89,6 @@
                             报名
                         </span>
                         <span class="id"><%= activity.id %></span>
-                        <h3 class="num">
-                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
-                        </h3>
                     </div>
                     <p class="detail">
                         <%= activity.detail %>
@@ -101,9 +98,6 @@
                     </h3>
                     <h3 class="starttime">
                         活动开始日期: <%= activity.starttime %>
-                    </h3>
-                    <h3 class="endtime">
-                        活动截止日期: <%= activity.endtime %>
                     </h3>
                 </div>
             <% }) %>
@@ -120,9 +114,6 @@
                             报名
                         </span>
                         <span class="id"><%= activity.id %></span>
-                        <h3 class="num">
-                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
-                        </h3>
                     </div>
                     <p class="detail">
                         <%= activity.detail %>
@@ -132,9 +123,6 @@
                     </h3>
                     <h3 class="starttime">
                         活动开始日期: <%= activity.starttime %>
-                    </h3>
-                    <h3 class="endtime">
-                        活动截止日期: <%= activity.endtime %>
                     </h3>
                 </div>
             <% }) %>
@@ -148,9 +136,6 @@
                     <div class="title">
                         <%= activity.title %>
                         <span class="id"><%= activity.id %></span>
-                        <h3 class="num">
-                            报名人数: <span class="regnum"><%= activity.regnum %></span> / <span class="maxnum"><%= activity.maxnum %></span>
-                        </h3>
                     </div>
                     <p class="detail">
                         <%= activity.detail %>
@@ -160,9 +145,6 @@
                     </h3>
                     <h3 class="starttime">
                         活动开始日期: <%= activity.starttime %>
-                    </h3>
-                    <h3 class="endtime">
-                        活动截止日期: <%= activity.endtime %>
                     </h3>
                 </div>
             <% }) %>
@@ -190,12 +172,6 @@
                 var deadline = node.getElementsByClassName("deadline")[0].textContent;
                 if(+new Date() > +new Date(deadline)) {
                     alert("已超过报名截止时间,报名失败")
-                    return;
-                }
-                var regnum = node.getElemenstByClassName("regnum")[0].textContent;
-                var maxnum = node.getElementsByClassName("maxnum")[0].textContent;
-                if(regnum >= maxnum) {
-                    alert("报名人数已满,报名失败");
                     return;
                 }
                 var actid = node.getElementsByClassName("id")[0].textContent;
