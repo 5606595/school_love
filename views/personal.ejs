@@ -711,6 +711,7 @@
         </div>
     </div>
 </body>
+<script src="/weixin/js/gesture.js"></script>
 <script>
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
@@ -1030,7 +1031,7 @@
         } else if(typeof document.body.style.transform !== undefined) {
             prefix = "";
         }
-        document.body.addEventListener("touchstart", function(e) {
+        document.body.addEventListener("tap", function(e) {
             var node;
             if(e.target.className.indexOf("change") !== -1) {
                 node = e.target;
