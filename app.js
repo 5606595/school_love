@@ -852,6 +852,7 @@ app.post("/actenroll", (req, res) => {
                     return;
                 }
                 if(res1.length) {
+                    console.log('haha')
                     if(!res1[0].allow) {
                         res.send('5')
                     } else if(res1[0].activity) {
@@ -865,6 +866,7 @@ app.post("/actenroll", (req, res) => {
                                 return;
                             }
                             if(res2.length) {
+                                console.log('hehe')
                                 if(+new Date() >= +new Date(res2[0].deadline)) {
                                     res.send('3')
                                 } else {
