@@ -843,54 +843,58 @@ app.post("/actenroll", (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var actid = req.body.id;
         var wechatNum = req.session.wechatNum;
-        var querySel = "select * from user where weichatNum = '" + wechatNum + "'";
-        connection.query(querySel, (err, res1) => {
-            if(err) {
-                console.log(err);
-                res.send('0');
-                return;
-            }
-            if(res1.length) {
-                if(!res1[0].allow) {
-                    res.send('5')
-                } else if(res1[0].activity) {
-                    res.send('2')
-                } else {
-                    var querySel = "select * from activity where id = " + actid;
-                    connection.query(querySel, (err, res2) => {
-                        if(err) {
-                            console.log(err);
-                            res.send('0');
-                            return;
-                        }
-                        if(res2.length) {
-                            if(+new Date() >= +new Date(res2[0].deadline)) {
-                                res.send('3')
-                            } else {
-                                var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "');";
-                                connection.query(querySel1, (err, res3) => {
-                                    if(err) {
-                                        console.log(err);
-                                        res.send('0');
-                                        return;
-                                    }
-                                    var regnum = Number(res2[0].regnum) + 1;
-                                    var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
-                                    connection.query(querySel2, (err, res4) => {
+        if(wechatNum) {
+            var querySel = "select * from user where weichatNum = '" + wechatNum + "'";
+            connection.query(querySel, (err, res1) => {
+                if(err) {
+                    console.log(err);
+                    res.send('0');
+                    return;
+                }
+                if(res1.length) {
+                    if(!res1[0].allow) {
+                        res.send('5')
+                    } else if(res1[0].activity) {
+                        res.send('2')
+                    } else {
+                        var querySel = "select * from activity where id = " + actid;
+                        connection.query(querySel, (err, res2) => {
+                            if(err) {
+                                console.log(err);
+                                res.send('0');
+                                return;
+                            }
+                            if(res2.length) {
+                                if(+new Date() >= +new Date(res2[0].deadline)) {
+                                    res.send('3')
+                                } else {
+                                    var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "');";
+                                    connection.query(querySel1, (err, res3) => {
                                         if(err) {
                                             console.log(err);
                                             res.send('0');
                                             return;
                                         }
-                                        res.send('1');
+                                        var regnum = Number(res2[0].regnum) + 1;
+                                        var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
+                                        connection.query(querySel2, (err, res4) => {
+                                            if(err) {
+                                                console.log(err);
+                                                res.send('0');
+                                                return;
+                                            }
+                                            res.send('1');
+                                        })
                                     })
-                                })
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                 }
-            }
-        })
+            })
+        } else {
+            res.send('5');
+        }
     }
 })
 
@@ -918,7 +922,11 @@ app.get('/veri', (req, res) => {
 })
 
 app.get('/personal', (req, res) => {
-    res.render('personal');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        res.render('personal');
+    } else {
+        res.send("请用微信浏览器打开")
+    }
 })
 
 app.get('/personalinfo', (req, res) => {
@@ -947,7 +955,11 @@ app.get('/personalinfo', (req, res) => {
 })
 
 app.get('/otherperson', (req, res) => {
-    res.render('otherperson')
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        res.render('otherperson')
+    } else {
+        res.send("请用微信浏览器打开")
+    }
 })
 
 app.get('/otherinfo', (req, res) => {
