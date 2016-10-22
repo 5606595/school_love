@@ -96,7 +96,7 @@ class People {
         this.matched = {};
         this.status = status;
         if(status === 0) {
-            this.limit = 3;
+            this.limit = 100;
             this.matchedTimes = {};
         } else {
             this.contactList = {}
@@ -198,13 +198,13 @@ class People {
             matchList[man] = {
                 user: girl,
                 changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 20 * 60 * 1000,
+                endTime: Date.now() + 12 * 60 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
                 changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 20 * 60 * 1000,
+                endTime: Date.now() + 12 * 60 * 1000,
                 canChange: false
             }
             if(!this.matchedTimes[man]) {
@@ -934,8 +934,8 @@ app.get('/personalinfo', (req, res) => {
                     res.send('0');
                     return;
                 }
-                if(res1[0].allow) {
-                    var json = JSON.stringify(res1);
+                if(res1[0]) {
+                    var json = JSON.stringify(res1[0]);
                     res.send(json);
                 } else {
                     res.send('2');
@@ -952,7 +952,84 @@ app.post('/persmod', (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         if(req.session.wechatNum) {
             console.log(req.body);
-            res.send('1');
+            var body = req.body;
+            if(body.height) {
+                var querySel = "update user set height = " + body.height + " where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.hometown) {
+                var querySel = "update user set hometown = '" + body.hometown + "', hometownAttr = '" + body.hometownAttr + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.constellation) {
+                var querySel = "update user set constellation = '" + body.constellation + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.department) {
+                var querySel = "update user set department = '" + body.department + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.grade) {
+                var querySel = "update user set grade = '" + body.grade + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.introduce) {
+                var querySel = "update user set introduce = '" + body.introduce + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
+            if(body.expect) {
+                var querySel = "update user set expect = '" + body.expect + "' where weichatNum = '" + req.session.wechatNum + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    res.send('1');
+                })
+            }
         } else {
             res.send('2');
         }
@@ -962,13 +1039,34 @@ app.post('/persmod', (req, res) => {
 })
 
 app.post('/persphoto', upload2.single('file'), (req, res) => {
-    if(req.file) {
-        console.log(req.file.filename);
-        var name = req.file.filename;
-        res.send('1');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        if(req.session.wechatNum) {
+            if(req.file) {
+                console.log(req.file.filename);
+                var name = req.file.filename;
+                if(name) {
+                    var querySel = "update user set personalphoto = '" + name + "' where weichatNum = '" + req.session.wechatNum + "'";
+                    connection.query(querySel, (err, res1) => {
+                        if(err) {
+                            console.log(err);
+                            res.send('0');
+                            return;
+                        }
+                        res.send('1');
+                    })
+                } else {
+                    res.send('0')
+                }
+            } else {
+                res.send('0')
+            }
+        } else {
+            res.send('2');
+        }
     } else {
         res.send('0')
     }
+
 });
 
 app.get('/wxcode', (req, res) => {

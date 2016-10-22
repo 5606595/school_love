@@ -727,26 +727,56 @@
                     xhr1.onreadystatechange = function() {
                         if(xhr1.readyState === 4) {
                             if ((xhr1.status >= 200 && xhr1.status <= 300) || xhr1.status === 304) {
-                                if(xhr1.responseText == '0') {
-                                    alert('微信认证失败')
+                                if(xhr1.responseText == '2') {
+                                    alert("账号未注册/验证,信息加载失败")
                                 } else {
-                                    if(xhr1.responseText == '2') {
-                                        alert("账号未注册/验证,信息加载失败")
-                                    } else {
-                                        var json = JSON.parse(xhr1.responseText);
-                                        alert(json.Name);
-                                        document.getElementById("nametext").textContent = json.Name;
-                                        document.getElementById("gendertext").textContent = json.gender ? "女" : "男";
-                                        if(json.height) {
-                                            document.getElementById("heighttext").textContent = json.height + "cm";
-                                            document.getElementById("heighttext").setAttribute("attr-num", json.height);
-                                        }
-                                        if(json.hometownAttr) {
-                                            document.getElementById("hometext").textContent = json.hometown;
-                                            document.getElementById("hometext").setAttribute("attr-num", json.hometownAttr);
-                                        }
-                                        create();
+                                    var json = JSON.parse(xhr1.responseText);
+                                    alert(json.Name);
+                                    document.getElementById("nametext").textContent = json.Name;
+                                    document.getElementById("gendertext").textContent = json.gender ? "女" : "男";
+                                    if(json.height) {
+                                        document.getElementById("heighttext").textContent = json.height + "cm";
+                                        document.getElementById("heighttext").setAttribute("attr-num", json.height);
                                     }
+                                    if(json.hometown) {
+                                        document.getElementById("hometext").textContent = json.hometown;
+                                        document.getElementById("hometext").setAttribute("attr-num", json.hometownAttr);
+                                    }
+                                    if(json.constellation) {
+                                        document.getElementById("constellation").textContent = json.constellation;
+                                        var indextemp = {
+                                            "白羊座": '1',
+                                            "金牛座": '2',
+                                            "双子座": '3',
+                                            "巨蟹座": '4',
+                                            "狮子座": '5',
+                                            "处女座": '6',
+                                            "天秤座": '7',
+                                            "天蝎座": '8',
+                                            "射手座": '9',
+                                            "摩羯座": '10',
+                                            "水瓶座": '11',
+                                            "双鱼座": '12'
+                                        }
+                                        document.getElementById("constellation").setAttribute('attr-num', indextemp[json.constellation]);
+                                    }
+                                    if(json.department) {
+                                        document.getElementById("departmenttext").textContent = json.department;
+                                    }
+                                    if(json.grade) {
+                                        document.getElementById("gradetext").textContent = json.grade + "级"
+                                        document.getElementById("gradetext").setAttribute("attr-num", json.grade - 2012);
+                                    }
+                                    if(json.introduce) {
+                                        document.getElementById("introtext").textContent = json.introduce;
+                                    }
+                                    if(json.expect) {
+                                        document.getElementById("wanttext").textContent = json.expect;
+                                    }
+                                    if(json.personalphoto) {
+                                        document.getElementById("photo").setAttribute("data-url", json.personalphoto);
+                                    }
+                                    create();
                                 }
                             }
                         }
