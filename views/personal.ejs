@@ -742,7 +742,7 @@
                                         document.getElementById("hometext").setAttribute("attr-num", json.hometownAttr);
                                     }
                                     if(json.constellation) {
-                                        document.getElementById("constellation").textContent = json.constellation;
+                                        document.getElementById("constellationtext").textContent = json.constellation;
                                         var indextemp = {
                                             "白羊座": '1',
                                             "金牛座": '2',
@@ -757,7 +757,7 @@
                                             "水瓶座": '11',
                                             "双鱼座": '12'
                                         }
-                                        document.getElementById("constellation").setAttribute('attr-num', indextemp[json.constellation]);
+                                        document.getElementById("constellationtext").setAttribute('attr-num', indextemp[json.constellation]);
                                     }
                                     if(json.department) {
                                         document.getElementById("departmenttext").textContent = json.department;
