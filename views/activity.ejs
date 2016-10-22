@@ -184,11 +184,12 @@
                         if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
                             if(xhr.responseText == '1') {
                                 alert("报名成功")
-                                node.getElemenstByClassName("regnum")[0].textContent = Number(node.getElementsByClassName("regnum")[0].textContent) + 1;
                             } else if(xhr.responseText == '2') {
-                                alert("你已报名其他活动, 不能再进行申请");
+                                alert("您已报名其他活动, 不能再进行申请");
                             } else if(xhr.responseText == '5') {
                                 alert("账号未通过认证,报名失败");
+                            } else if(xhr.responseText == '6') {
+                                alert("您已报名过改活动")
                             } else {
                                 alert("报名失败")
                             }
