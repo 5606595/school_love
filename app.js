@@ -324,7 +324,7 @@ app.get('/create', (req, res) => {
                  {
                      "type": "view",
                      "name": "个人设置",
-                     "url": "http://www.campuslinker.com/weixin/regist"
+                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/personal&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                  }]
              },
              {
@@ -977,18 +977,15 @@ app.get('/wxcode', (req, res) => {
     } else {
         var code = req.query.wxcode;
         code = code.slice(6, code.length);
-        console.log(code);
         var option = {
             url: "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f&code=" + code + "&grant_type=authorization_code"
         }
         request(option, (err, res1, body) => {
             if(JSON.parse(body).openid) {
-                console.log(1);
                 req.session.wechatNum = JSON.parse(body).openid
                 res.send('1');
                 return;
             }
-            console.log(0);
             res.send('0');
         });
     }
