@@ -721,19 +721,16 @@
                 if(xhr.responseText === '0') {
                     alert("微信认证失败");
                 } else {
-                    alert('haha');
                     var xhr1 = new XMLHttpRequest();
                     xhr1.open('GET', '/weixin/personalinfo', true);
                     xhr1.send(null);
                     xhr1.onreadystatechange = function() {
                         if(xhr1.readyState === 4) {
                             if ((xhr1.status >= 200 && xhr1.status <= 300) || xhr1.status === 304) {
-                                alert(xhr1.responseText);
                                 if(xhr1.responseText == '2') {
                                     alert("账号未注册/验证,信息加载失败")
                                 } else {
                                     var json = JSON.parse(xhr1.responseText);
-                                    alert(json.Name);
                                     document.getElementById("nametext").textContent = json.Name;
                                     document.getElementById("gendertext").textContent = json.gender ? "女" : "男";
                                     if(json.height) {

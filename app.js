@@ -927,7 +927,7 @@ app.get('/personal', (req, res) => {
 app.get('/personalinfo', (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         if(req.session.wechatNum) {
-            var querySel = "select * from user weichatNum = '" + req.session.wechatNum + "'";
+            var querySel = "select * from user where weichatNum = '" + req.session.wechatNum + "'";
             connection.query(querySel, (err, res1) => {
                 if(err) {
                     console.log(err);
