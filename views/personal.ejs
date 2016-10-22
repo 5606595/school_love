@@ -732,7 +732,7 @@
                                 } else {
                                     var json = JSON.parse(xhr1.responseText);
                                     document.getElementById("nametext").textContent = json.Name;
-                                    document.getElementById("gendertext").textContent = json.gender ? "女" : "男";
+                                    document.getElementById("gendertext").textContent = json.gender == '1' ? "女" : "男";
                                     if(json.height) {
                                         document.getElementById("heighttext").textContent = json.height + "cm";
                                         document.getElementById("heighttext").setAttribute("attr-num", json.height);
