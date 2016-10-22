@@ -220,11 +220,11 @@ class People {
         } else {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 6 * 60 * 1000
+                endTime: Date.now() + 20 * 60 * 1000
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 6 * 60 * 1000
+                endTime: Date.now() + 20 * 60 * 1000
             }
         }
         delete waitList[man];
@@ -541,8 +541,8 @@ app.post('/token', urlencodedParser, (req, res) => {
             }
             if(result.MsgType[0] === 'event') {
                 if(result.EventKey[0] === 'verify') {
-                    var wechatnum = result.FromUserName[0];
-                    if(waitVerify[wechatnum]) {
+                    var wechatNum = result.FromUserName[0];
+                    if(waitVerify[wechatNum]) {
 
                     } else {
                         var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
@@ -564,7 +564,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                  var xml = builder.buildObject(msg);
                                  res.send(xml)
                             } else {
-                                waitVerify[wechatnum] = true;
+                                waitVerify[wechatNum] = true;
                                 var msg = {
                                     xml: {
                                         ToUserName: result.FromUserName,
@@ -774,9 +774,10 @@ app.post('/getveri', (req, res) => {
 
 app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
-        var weichatNum = req.session.wechatnum;
+        var weichatNum = req.session.wechatNum;
         if(weichatNum) {
-            var photo = req.file.name
+            var photo = req.file.filename;
+            console.log(photo)
             var phoneNum = req.body.phoneNum;
             var regCode = req.body.regCode;
             if (phoneNum == req.session.phoneNum && regCode == req.session.regCode) {
@@ -842,8 +843,8 @@ app.get('/activity', (req, res) => {
 app.post("/actenroll", (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var actid = req.body.id;
-        var wxid = req.session.wxid;
-        var querySel = "select * from user where weichatNum = " + wxid;
+        var wechatNum = req.session.wechatNum;
+        var querySel = "select * from user where weichatNum = " + wechatNum;
         connection.query(querySel, (err, res1) => {
             if(err) {
                 console.log(err);
@@ -862,19 +863,19 @@ app.post("/actenroll", (req, res) => {
                             return;
                         }
                         if(res2.length) {
-                            if(+new Date() >= +new Date(res2.deadline)) {
+                            if(+new Date() >= +new Date(res2[0].deadline)) {
                                 res.send('3')
-                            } else if(res2.regnum >= res2.maxnum) {
+                            } else if(res2[0].regnum >= res2[0].maxnum) {
                                 res.send('4')
                             } else {
-                                var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1.id + ", '" + res1.Name + "', " + actid + ", '" + res2.title + "', '" + res1.school + "');";
+                                var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "');";
                                 connection.query(querySel1, (err, res3) => {
                                     if(err) {
                                         console.log(err);
                                         res.send('0');
                                         return;
                                     }
-                                    var regnum = Number(res2.regnum) + 1;
+                                    var regnum = Number(res2[0].regnum) + 1;
                                     var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
                                     connection.query(querySel2, (err, res4) => {
                                         if(err) {
@@ -885,7 +886,6 @@ app.post("/actenroll", (req, res) => {
                                         res.send('1');
                                     })
                                 })
-
                             }
                         }
                     })
@@ -929,6 +929,7 @@ app.post('/persmod', (req, res) => {
 
 app.post('/persphoto', upload2.single('file'), (req, res) => {
     if(req.file) {
+        console.log(req.file.filename);
         var name = req.file.filename;
         res.send('1');
     } else {
@@ -946,7 +947,7 @@ app.get('/wxcode', (req, res) => {
     request(option, (err, res1, body) => {
         if(JSON.parse(body).openid) {
             console.log(1);
-            req.session.wechatnum = JSON.parse(body).openid
+            req.session.wechatNum = JSON.parse(body).openid
             res.send('1');
             return;
         }
