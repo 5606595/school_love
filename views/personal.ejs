@@ -1104,8 +1104,8 @@
             select.addEventListener('touchstart', selectInit, false);
             select.addEventListener('touchmove', selectMove, false);
             select.addEventListener('touchend', selectEnd, false);
-            save.addEventListener('touchstart', saveFun, false);
-            cancel.addEventListener('touchstart', cancelFun, false);
+            save.addEventListener('tap', saveFun, false);
+            cancel.addEventListener('tap', cancelFun, false);
             function selectInit(e) {
                 e.preventDefault();
                 init = e.touches[0].screenY;
@@ -1187,7 +1187,8 @@
                 select.removeEventListener('touchstart', selectInit);
                 select.removeEventListener('touchmove', selectMove);
                 select.removeEventListener('touchend', selectEnd);
-                save.removeEventListener('touchstart', saveFun);
+                save.removeEventListener('tap', saveFun);
+                cancel.removeEventListener('tap', cancelFun);
                 set.removeEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun);
                 cover.classList.add('disappear')
                 document.body.removeChild(set);
@@ -1223,8 +1224,8 @@
             homeset.addEventListener('touchstart', selectInit, false);
             homeset.addEventListener('touchmove', selectMove, false);
             homeset.addEventListener('touchend', selectEnd, false);
-            cancel.addEventListener('touchstart', cancelFun, false);
-            confirm.addEventListener('touchstart', confirmFun, false);
+            cancel.addEventListener('tap', cancelFun, false);
+            confirm.addEventListener('tap', confirmFun, false);
 
             function selectInit(e) {
                 e.preventDefault();
@@ -1602,8 +1603,8 @@
                 homeset.removeEventListener('touchstart', selectInit)
                 homeset.removeEventListener('touchmove', selectMove)
                 homeset.removeEventListener('touchend', selectEnd)
-                cancel.removeEventListener('touchstart', cancelFun)
-                confirm.removeEventListener('touchstart', confirmFun)
+                cancel.removeEventListener('tap', cancelFun)
+                confirm.removeEventListener('tap', confirmFun)
                 homeset.removeEventListener(prefix ? prefix + "AnimationEnd" : "animationend", homesetFun);
                 document.body.removeChild(homeset)
             }
@@ -1628,8 +1629,8 @@
             }
             input.addEventListener('keydown', keydownFun, false);
             input.addEventListener('keyup', keyupFun, false);
-            save.addEventListener('touchstart', saveFun, false);
-            exit.addEventListener('touchstart', exitFun, false);
+            save.addEventListener('tap', saveFun, false);
+            exit.addEventListener('tap', exitFun, false);
             input.focus();
             function keydownFun(e) {
                 var num = 30 - input.value.length;
@@ -1664,8 +1665,8 @@
             function extraFun() {
                 input.removeEventListener("keydown", keydownFun);
                 input.removeEventListener("keyup", keyupFun);
-                save.removeEventListener("touchstart", saveFun);
-                exit.removeEventListener("touchstart", exitFun);
+                save.removeEventListener("tap", saveFun);
+                exit.removeEventListener("tap", exitFun);
                 extra.removeEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun);
                 document.body.removeChild(extra);
             }
@@ -1705,8 +1706,8 @@
             select.addEventListener('touchstart', selectInit, false);
             select.addEventListener('touchmove', selectMove, false);
             select.addEventListener('touchend', selectEnd, false);
-            save.addEventListener('touchstart', saveFun, false);
-            cancel.addEventListener('touchstart', cancelFun, false);
+            save.addEventListener('tap', saveFun, false);
+            cancel.addEventListener('tap', cancelFun, false);
             function selectInit(e) {
                 e.preventDefault();
                 init = e.touches[0].screenY;
@@ -1788,7 +1789,8 @@
                 select.removeEventListener('touchstart', selectInit);
                 select.removeEventListener('touchmove', selectMove);
                 select.removeEventListener('touchend', selectEnd);
-                save.removeEventListener('touchstart', saveFun);
+                save.removeEventListener('tap', saveFun);
+                cancel.removeEventListener('tap', cancelFun);
                 set.removeEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun);
                 cover.classList.add('disappear')
                 document.body.removeChild(set);
@@ -1833,8 +1835,8 @@
             select.addEventListener('touchstart', selectInit, false);
             select.addEventListener('touchmove', selectMove, false);
             select.addEventListener('touchend', selectEnd, false);
-            save.addEventListener('touchstart', saveFun, false);
-            cancel.addEventListener('touchstart', cancelFun, false);
+            save.addEventListener('tap', saveFun, false);
+            cancel.addEventListener('tap', cancelFun, false);
             function selectInit(e) {
                 e.preventDefault();
                 init = e.touches[0].screenY;
@@ -1916,7 +1918,8 @@
                 select.removeEventListener('touchstart', selectInit);
                 select.removeEventListener('touchmove', selectMove);
                 select.removeEventListener('touchend', selectEnd);
-                save.removeEventListener('touchstart', saveFun);
+                save.removeEventListener('tap', saveFun);
+                cancel.removeEventListener('tap', cancelFun);
                 set.removeEventListener(prefix ? prefix + 'AnimationEnd' : "animationend", setFun);
                 cover.classList.add('disappear')
                 document.body.removeChild(set);
@@ -1942,8 +1945,8 @@
             }
             textarea.addEventListener('keydown', keydownFun, false);
             textarea.addEventListener('keyup', keyupFun, false);
-            save.addEventListener('touchstart', saveFun, false);
-            exit.addEventListener('touchstart', exitFun, false);
+            save.addEventListener('tap', saveFun, false);
+            exit.addEventListener('tap', exitFun, false);
             textarea.focus();
             function keydownFun(e) {
                 var num = textarea.value.length;
@@ -1978,8 +1981,8 @@
             function extraFun() {
                 textarea.removeEventListener("keydown", keydownFun);
                 textarea.removeEventListener("keyup", keyupFun);
-                save.removeEventListener("touchstart", saveFun);
-                exit.removeEventListener("touchstart", exitFun);
+                save.removeEventListener("tap", saveFun);
+                exit.removeEventListener("tap", exitFun);
                 extra.removeEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun);
                 document.body.removeChild(extra);
             }
@@ -2000,8 +2003,8 @@
             }
             textarea.addEventListener('keydown', keydownFun, false);
             textarea.addEventListener('keyup', keyupFun, false);
-            save.addEventListener('touchstart', saveFun, false);
-            exit.addEventListener('touchstart', exitFun, false);
+            save.addEventListener('tap', saveFun, false);
+            exit.addEventListener('tap', exitFun, false);
             textarea.focus();
             function keydownFun(e) {
                 var num = textarea.value.length;
@@ -2036,8 +2039,8 @@
             function extraFun() {
                 textarea.removeEventListener("keydown", keydownFun);
                 textarea.removeEventListener("keyup", keyupFun);
-                save.removeEventListener("touchstart", saveFun);
-                exit.removeEventListener("touchstart", exitFun);
+                save.removeEventListener("tap", saveFun);
+                exit.removeEventListener("tap", exitFun);
                 extra.removeEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun);
                 document.body.removeChild(extra);
             }
@@ -2057,8 +2060,8 @@
                 img.setAttribute("src", photo.getAttribute("data-url"));
             }
             input.addEventListener("change", uploadFun, false);
-            save.addEventListener("touchstart", saveFun, false);
-            exit.addEventListener("touchstart", exitFun, false);
+            save.addEventListener("tap", saveFun, false);
+            exit.addEventListener("tap", exitFun, false);
             function uploadFun(e) {
                 files = e.target.files;
                 if(files[0]) {
@@ -2100,8 +2103,8 @@
             }
             function extraFun() {
                 input.removeEventListener("change", uploadFun);
-                save.removeEventListener("touchstart", saveFun);
-                exit.removeEventListener("touchstart", exitFun);
+                save.removeEventListener("tap", saveFun);
+                exit.removeEventListener("tap", exitFun);
                 extra.removeEventListener(prefix ? prefix + "AnimationEnd" : "animationend", extraFun);
                 document.body.removeChild(extra);
             }
