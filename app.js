@@ -843,7 +843,7 @@ app.post("/actenroll", (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var actid = req.body.id;
         var wechatNum = req.session.wechatNum;
-        var querySel = "select * from user where weichatNum = " + wechatNum;
+        var querySel = "select * from user where weichatNum = '" + wechatNum + "'";
         connection.query(querySel, (err, res1) => {
             if(err) {
                 console.log(err);
