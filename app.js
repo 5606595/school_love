@@ -197,14 +197,14 @@ class People {
         if(this.status === 0) {
             matchList[man] = {
                 user: girl,
-                changeTime: Date.now() + 3 * 1000,
-                endTime: Date.now() + 20 * 1000,
+                changeTime: Date.now() + 3 * 60 * 1000,
+                endTime: Date.now() + 20 * 60 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
-                changeTime: Date.now() + 3 * 1000,
-                endTime: Date.now() + 20 * 1000,
+                changeTime: Date.now() + 3 * 60 * 1000,
+                endTime: Date.now() + 20 * 60 * 1000,
                 canChange: false
             }
             if(!this.matchedTimes[man]) {

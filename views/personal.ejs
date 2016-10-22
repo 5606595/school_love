@@ -740,7 +740,10 @@
                                             document.getElementById("heighttext").textContent = json.height + "cm";
                                             document.getElementById("heighttext").setAttribute("attr-num", json.height);
                                         }
-                                        if()
+                                        if(json.hometownAttr) {
+                                            document.getElementById("hometext").textContent = json.hometown;
+                                            document.getElementById("hometext").setAttribute("attr-num", json.hometownAttr);
+                                        }
                                         create();
                                     }
                                 }
