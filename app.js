@@ -197,13 +197,13 @@ class People {
         if(this.status === 0) {
             matchList[man] = {
                 user: girl,
-                changeTime: Date.now() + 8 * 1000,
+                changeTime: Date.now() + 3 * 1000,
                 endTime: Date.now() + 20 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
-                changeTime: Date.now() + 8 * 1000,
+                changeTime: Date.now() + 3 * 1000,
                 endTime: Date.now() + 20 * 1000,
                 canChange: false
             }
@@ -447,7 +447,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                         }
                         var xml = builder.buildObject(msg);
-                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow, activity, starttime, endtime) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1', 1, '2016-10-13 00:00:00', '2016-11-16 00:00:00')";
+                        var querySel = "insert into user (gender, weichatNum, phoneNum, password, Name, valiPhoto, contact, allow) values (1, '" + result.FromUserName[0] + "', '1', '223', 'a', '1', '11', '1')";
                         connection.query(querySel, (err, res2) => {
                             if(err) {
                                 console.log(err);
@@ -790,7 +790,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 if (!contact) {
                     contact = phoneNum;
                 }
-                if (code && school && schema) {
+                if (code && school && schema && photo) {
                     var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
                     if (reg.test(code)) {
                         var querySel = "insert into user(phoneNum, password, Name, gender, school, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
