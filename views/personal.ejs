@@ -734,6 +734,7 @@
                                         alert("账号未注册/验证,信息加载失败")
                                     } else {
                                         var json = JSON.parse(xhr.responseText);
+                                        alert(json.Name);
                                         document.getElementById("nametext").textContent = json.Name;
                                         document.getElementById("gendertext").textContent = json.gender ? "女" : "男";
                                         if(json.height) {
