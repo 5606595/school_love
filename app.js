@@ -852,7 +852,9 @@ app.post("/actenroll", (req, res) => {
                 return;
             }
             if(res1.length) {
-                if(res1[0].activity) {
+                if(!res1[0].allow) {
+                    res.send('5')
+                } else if(res1[0].activity) {
                     res.send('2')
                 } else {
                     var querySel = "select * from activity where id = " + actid;
@@ -922,6 +924,28 @@ app.get('/personal', (req, res) => {
     res.render('personal');
 })
 
+app.get('/personalinfo', (req, res) => {
+    if(req.session.wechatNum) {
+        var querySel = "select * from user weichatNum = '" + wechatNum + "'";
+        connection.query(querySel, (err, res1) => {
+            if(err) {
+                console.log(err);
+                res.send('0');
+                return;
+            }
+            if(res1[0].allow) {
+                var json = JSON.stringify(res1);
+                res.send(json);
+            } else {
+                res.send('2');
+            }
+        })
+    } else {
+        res.send('0');
+    }
+})
+
+
 app.post('/persmod', (req, res) => {
     console.log(req.body);
     res.send('1');
@@ -938,22 +962,26 @@ app.post('/persphoto', upload2.single('file'), (req, res) => {
 });
 
 app.get('/wxcode', (req, res) => {
-    var code = req.query.wxcode;
-    code = code.slice(6, code.length);
-    console.log(code);
-    var option = {
-        url: "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f&code=" + code + "&grant_type=authorization_code"
-    }
-    request(option, (err, res1, body) => {
-        if(JSON.parse(body).openid) {
-            console.log(1);
-            req.session.wechatNum = JSON.parse(body).openid
-            res.send('1');
-            return;
+    if(req.session.wechatNum) {
+        res.send('1');
+    } else {
+        var code = req.query.wxcode;
+        code = code.slice(6, code.length);
+        console.log(code);
+        var option = {
+            url: "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx78c23473ba07e598&secret=bf7724fa0b5b6586263c362944d1ad5f&code=" + code + "&grant_type=authorization_code"
         }
-        console.log(0);
-        res.send('0');
-    });
+        request(option, (err, res1, body) => {
+            if(JSON.parse(body).openid) {
+                console.log(1);
+                req.session.wechatNum = JSON.parse(body).openid
+                res.send('1');
+                return;
+            }
+            console.log(0);
+            res.send('0');
+        });
+    }
 })
 
 

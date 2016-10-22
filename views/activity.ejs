@@ -170,6 +170,18 @@
     </div>
 </body>
 <script>
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
+    xhr.send(null);
+    xhr.onreadystatechange = function() {
+        if(xhr.readyState === 4) {
+            if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+                if(xhr.responseText === '0') {
+                    alert("微信认证失败");
+                }
+            }
+        }
+    }
     var container = document.getElementById("container");
     container.addEventListener("touchstart", function(event) {
         if(event.target.className === "apply") {
@@ -199,8 +211,10 @@
                                 node.getElemenstByClassName("regnum")[0].textContent = Number(node.getElementsByClassName("regnum")[0].textContent) + 1;
                             } else if(xhr.responseText == '2') {
                                 alert("你已报名其他活动, 不能再进行申请");
+                            } else if(xhr.responseText == '5') {
+                                alert("账号未通过认证,报名失败");
                             } else {
-                                alert("报名失败");
+                                alert("报名失败")
                             }
                         }
                     }
