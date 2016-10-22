@@ -944,6 +944,8 @@ app.get('/personalinfo', (req, res) => {
         } else {
             res.send('0');
         }
+    } else {
+        res.send('0')
     }
 })
 
