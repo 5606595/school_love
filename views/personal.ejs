@@ -1558,7 +1558,7 @@
                     text = text1 + "," + text2;
                     attr = highinit1 + "-" + highinit2;
                 }
-                send('/weixin/persmod', 'POST', {hometown: text}, 0, function() {
+                send('/weixin/persmod', 'POST', {hometown: text, hometownAttr: attr}, 0, function() {
                     hometext.textContent = text;
                     hometext.setAttribute('attr-num', attr);
                     homeset.classList.add('downele');
@@ -2097,6 +2097,8 @@
                             if(xhr.responseText == '1') {
                                 console.log('success');
                                 callback();
+                            } else if(xhr.responseText == '2') {
+                                alert("登录已过期,请重新登录");
                             } else {
                                 alert("保存失败");
                             }
@@ -2115,6 +2117,8 @@
                             if(xhr.responseText == '1') {
                                 console.log('success');
                                 callback();
+                            } else if(xhr.responseText == '2') {
+                                alert("登录已过期,请重新登录");
                             } else {
                                 alert("保存失败");
                             }

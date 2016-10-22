@@ -925,30 +925,40 @@ app.get('/personal', (req, res) => {
 })
 
 app.get('/personalinfo', (req, res) => {
-    if(req.session.wechatNum) {
-        var querySel = "select * from user weichatNum = '" + wechatNum + "'";
-        connection.query(querySel, (err, res1) => {
-            if(err) {
-                console.log(err);
-                res.send('0');
-                return;
-            }
-            if(res1[0].allow) {
-                var json = JSON.stringify(res1);
-                res.send(json);
-            } else {
-                res.send('2');
-            }
-        })
-    } else {
-        res.send('0');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        if(req.session.wechatNum) {
+            var querySel = "select * from user weichatNum = '" + wechatNum + "'";
+            connection.query(querySel, (err, res1) => {
+                if(err) {
+                    console.log(err);
+                    res.send('0');
+                    return;
+                }
+                if(res1[0].allow) {
+                    var json = JSON.stringify(res1);
+                    res.send(json);
+                } else {
+                    res.send('2');
+                }
+            })
+        } else {
+            res.send('0');
+        }
     }
 })
 
 
 app.post('/persmod', (req, res) => {
-    console.log(req.body);
-    res.send('1');
+    if(req.headers['user-agent'].match("MicroMessenger")) {
+        if(req.session.wechatNum) {
+            console.log(req.body);
+            res.send('1');
+        } else {
+            res.send('2');
+        }
+    } else {
+        res.send('0');
+    }
 })
 
 app.post('/persphoto', upload2.single('file'), (req, res) => {
