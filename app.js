@@ -789,7 +789,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 if (!contact) {
                     contact = phoneNum;
                 }
-                if (code && school && schema && photo) {
+                if (code && school && degree && photo) {
                     var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
                     if (reg.test(code)) {
                         var querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
