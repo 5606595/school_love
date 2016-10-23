@@ -68,7 +68,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 180000
+        maxAge: 1000 * 60 * 30
     }
 }))
 
@@ -804,7 +804,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 }
             }
         } else {
-            res.send('微信认证错误')
+            res.send('对不起,微信登录已过期,请重新注册')
         }
     } else {
         res.send('请用微信浏览器打开')
