@@ -399,7 +399,7 @@ app.post('/token', urlencodedParser, (req, res) => {
         parseString(str, (err, result) => {
             result = result.xml;
             if(result.MsgType[0] === 'text') {
-                if(askp[result.FromUserName[0]] && result.Content[0] == "索要联系方式") {
+                if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
                     send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
                     recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
@@ -1264,7 +1264,7 @@ function check() {
             }
             if(matchList[i].endTime < Date.now()) {
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' ");
-                send(matchList[i].user, '聊天时间结束, 回复"索要联系方式"可向对方索要联系方式')
+                send(matchList[i].user, '聊天时间结束, 回复"1"可向对方索要联系方式')
                 askp[i] = matchList[i].user;
                 delete matchList[i]
             }
@@ -1288,7 +1288,7 @@ function check() {
                 //             return;
                 //         }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
-                        send(matchList[i].user, '聊天时间结束, 回复"索要联系方式"可向对方索要联系方式')
+                        send(matchList[i].user, '聊天时间结束, 回复"1"可向对方索要联系方式')
                         askp[i] = matchList[i].user;
                         delete matchList[i]
                     // })
