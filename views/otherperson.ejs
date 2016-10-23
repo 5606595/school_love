@@ -148,14 +148,12 @@
                 if (xhr1.responseText === '0') {
                     alert("微信认证失败");
                 } else {
-                    alert('haha')
                     var xhr = new XMLHttpRequest();
                     xhr.open('GET', '/weixin/otherinfo', true);
                     xhr.send(null);
                     xhr.onreadystatechange = function() {
                         if(xhr.readyState === 4) {
                             if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
-                                alert(xhr.responseText)
                                 if(xhr.responseText == '2') {
                                     alert("您的账号为注册/通过")
                                 } else if(xhr.responseText == '3') {
