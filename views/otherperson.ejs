@@ -150,7 +150,7 @@
                 } else {
                     alert('haha')
                     var xhr = new XMLHttpRequest();
-                    xhr.open('GET', '/weixin/otherinfo', false);
+                    xhr.open('GET', '/weixin/otherinfo', true);
                     xhr.send(null);
                     xhr.onreadystatechange = function() {
                         if(xhr.readyState === 4) {
