@@ -124,7 +124,7 @@
                     年级
                 </span>
                 <span class="right" id="gradetext">
-                    2014级
+                    对方未填写
                 </span>
             </div>
             <div class="title">自我介绍</div>
@@ -144,7 +144,7 @@
     xhr1.send(null);
     xhr1.onreadystatechange = function() {
         if (xhr1.readyState === 4) {
-            if ((xhr1.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
+            if ((xhr1.status >= 200 && xhr1.status <= 300) || xhr1.status === 304) {
                 if (xhr1.responseText === '0') {
                     alert("微信认证失败");
                 } else {
