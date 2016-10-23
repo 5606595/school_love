@@ -283,7 +283,7 @@ app.get('/create', (req, res) => {
                  {
                      "type": "view",
                      "name": "对方信息页",
-                     "key": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/otherperson&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
+                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/otherperson&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                  },
                  {
                      "type": "click",
