@@ -667,7 +667,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             res.send(xml);
                             return ;
                         } else {
-                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配']);
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['换人成功, 正在重新匹配......']);
                             var obj = matchList[result.FromUserName[0]].user;
                             send(obj, '对方已结束此次对话，请点击随机匹配继续此次联谊');
                             console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 换人对象: '" + obj + "'" );
@@ -978,15 +978,13 @@ app.get('/otherinfo', (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         if (req.session.wechatNum) {
             if(matchList[req.session.wechatNum]) {
-                var querySel = "select * from user where weichatNum = '" + matchList[req.session.wechatNum] + "'";
-                console.log(matchList[req.session.wechatNum]);
+                var querySel = "select * from user where weichatNum = '" + matchList[req.session.wechatNum].user + "'";
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err);
                         res.send('0');
                         return;
                     }
-                    console.log(res1[0]);
                     if(res1[0]) {
                         res.send(JSON.stringify(res1[0]))
                     } else {
