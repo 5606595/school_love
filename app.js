@@ -61,7 +61,7 @@ var upload2 = multer({
     }
 })
 
-var askp = {}, recep = {}, matchList = {}, waitList = {}, uv = 0, pv = 0;
+var askp = {}, recep = {}, matchList = {}, waitList = {};
 
 app.use(session({
     secret: 'zuizui-lianyi',
@@ -979,12 +979,14 @@ app.get('/otherinfo', (req, res) => {
         if (req.session.wechatNum) {
             if(matchList[req.session.wechatNum]) {
                 var querySel = "select * from user where weichatNum = '" + matchList[req.session.wechatNum] + "'";
+                console.log(matchList[req.session.wechatNum]);
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err);
                         res.send('0');
                         return;
                     }
+                    console.log(res1[0]);
                     if(res1[0]) {
                         res.send(JSON.stringify(res1[0]))
                     } else {
