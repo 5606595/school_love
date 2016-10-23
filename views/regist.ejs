@@ -141,6 +141,9 @@
     var select2 = document.querySelector(".select2");
     var input = document.getElementById("photo")
     var filename = document.getElementById("filename");
+    btn.addEventListener("touchstart", function(event) {
+        event.preventDefault();
+    }, false)
     btn.addEventListener("tap", function(event) {
         event.preventDefault();
         var phoneNum = document.querySelector("#phone").value;
