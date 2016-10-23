@@ -9,6 +9,9 @@
         button[disabled] {
             background: #999!important;
         }
+        input {
+            text-indent: 20px;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +115,7 @@
         </div>
     </form>
 </body>
+<script src="/weixin/js/gesture.js"></script>
 <script>
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/weixin/wxcode?wxcode=' + location.search, true);
@@ -137,7 +141,7 @@
     var select2 = document.querySelector(".select2");
     var input = document.getElementById("photo")
     var filename = document.getElementById("filename");
-    btn.addEventListener("touchstart", function(event) {
+    btn.addEventListener("tap", function(event) {
         event.preventDefault();
         var phoneNum = document.querySelector("#phone").value;
         if(!(/^1[34578]\d{9}$/.test(phoneNum))){
