@@ -987,6 +987,8 @@ app.get('/otherinfo', (req, res) => {
                     }
                     if(res1[0]) {
                         res.send(JSON.stringify(res1[0]))
+                    } else {
+                        res.send('0');
                     }
                 });
             } else {
