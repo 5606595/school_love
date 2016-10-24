@@ -679,7 +679,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                             var xml = builder.buildObject(msg);
                             res.send(xml);
-                        } else if(res1[0].allow == 0) {
+                        } else if(res1[0].allow != 1) {
                             if(res1[0].matchedTimes == 0) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您为游客身份,正在为您匹配中......'])
                                 touristList.insertPeople(result.FromUserName[0]);
