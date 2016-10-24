@@ -88,86 +88,136 @@ app.use(bodyParser());
 
 class People {
     constructor(status, actid) {
-        this.man1 = [];
-        this.man2 = [];
-        this.girl1 = [];
-        this.girl2 = [];
-        this.flag = 0;
-        this.matched = {};
-        this.status = status;
-        if(status === 0) {
-            this.limit = 100;
-            this.matchedTimes = {};
+        if(status !== 2) {
+            this.man1 = [];
+            this.man2 = [];
+            this.girl1 = [];
+            this.girl2 = [];
+            this.flag = 0;
+            this.matched = {};
+            this.status = status;
+            if(status === 0) {
+                this.limit = 100;
+                this.matchedTimes = {};
+            } else {
+                this.contactList = {}
+                this.actid = actid;
+            }
         } else {
-            this.contactList = {}
-            this.actid = actid;
+            this.people1 = [];
+            this.people2 = [];
+            this.status = status;
+            this.flag = 0;
+            this.insertPeople = function(id) {
+                if(this.flag) {
+                    this.people2.push(id);
+                } else {
+                    this.people1.push(id);
+                }
+            }
         }
     }
     matchCheck() {
         if(this.flag === 0) {
-            for(var i in this.man1) {
-                for(var j in this.girl1) {
-                    if(!this.man1[i] || !this.girl1[j] || (this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j]))) {
-
-                    } else {
-                        if(this.status == 0) {
-                            console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'");
-                        } else {
-                            console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'  actid: " + this.actid);
-                        }
-                        this.match(this.man1[i], this.girl1[j]);
-                        this.man1[i] = "";
-                        this.girl1[j] = "";
+            if(this.status === 2) {
+                for(var i = 0, j = this.people1.length; i < j; i += 2) {
+                    if(this.people1[i] && this.people1[i + 1]) {
+                        this.match(this.people1[i], this.people1[i + 1]);
+                        this.people1[i] = ""
+                        this.people1[i + 1] = ""
                     }
                 }
+                this.people1.map((person) => {
+                    if(person) {
+                        this.people2.push(person);
+                    }
+                })
+                this.people1 = [];
+                this.flag = 1;
+            } else {
+                for(var i in this.man1) {
+                    for(var j in this.girl1) {
+                        if(!this.man1[i] || !this.girl1[j] || (this.matched[this.man1[i]] && this.matched[this.man1[i]].findEle(this.girl1[j]))) {
+
+                        } else {
+                            if(this.status == 0) {
+                                console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'");
+                            } else if(this.status == 1) {
+                                console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'  actid: " + this.actid);
+                            } else {
+                                console.log(new Date().toLocaleString() + "   '" + this.man1[i] + "'" + " matches '" + this.girl1[j] + "'  tourist! ");
+                            }
+                            this.match(this.man1[i], this.girl1[j]);
+                            this.man1[i] = "";
+                            this.girl1[j] = "";
+                        }
+                    }
+                }
+                var i = 0, j = 0;
+                this.man1.map((dataMan) => {
+                    if(dataMan) {
+                        this.man2[i] = dataMan;
+                        i++;
+                    }
+                })
+                this.girl1.map((dataGirl) => {
+                    if(dataGirl) {
+                        this.girl2[j] = dataGirl;
+                    }
+                });
+                this.man1 = [];
+                this.girl1 = [];
+                this.flag = 1;
             }
-            var i = 0, j = 0;
-            this.man1.map((dataMan) => {
-                if(dataMan) {
-                    this.man2[i] = dataMan;
-                    i++;
-                }
-            })
-            this.girl1.map((dataGirl) => {
-                if(dataGirl) {
-                    this.girl2[j] = dataGirl;
-                }
-            });
-            this.man1 = [];
-            this.girl1 = [];
-            this.flag = 1;
         } else {
-            for(var i in this.man2) {
-                for(var j in this.girl2) {
-                    if(!this.man2[i] || !this.girl2[j] || (this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j]))) {
-
-                    } else {
-                        if(this.status == 0) {
-                            console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'");
-                        } else {
-                            console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'  actid: " + this.actid);
-                        }
-                        this.match(this.man2[i], this.girl2[j]);
-                        this.man2[i] = "";
-                        this.girl2[j] = "";
+            if(this.status === 2) {
+                for(var i = 0, j = this.people2.length; i < j; i += 2) {
+                    if(this.people2[i] && this.people2[i + 1]) {
+                        this.match(this.people2[i], this.people2[i + 1]);
+                        this.people2[i] = ""
+                        this.people2[i + 1] = ""
                     }
                 }
+                this.people2.map((person) => {
+                    if(person) {
+                        this.people1.push(person);
+                    }
+                })
+                this.people2 = [];
+                this.flag = 0;
+            } else {
+                for(var i in this.man2) {
+                    for(var j in this.girl2) {
+                        if(!this.man2[i] || !this.girl2[j] || (this.matched[this.man2[i]] && this.matched[this.man2[i]].findEle(this.girl2[j]))) {
+
+                        } else {
+                            if(this.status == 0) {
+                                console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'");
+                            } else {
+                                console.log(new Date().toLocaleString() + "   '" + this.man2[i] + "'" + " matches '" + this.girl2[j] + "'  actid: " + this.actid);
+                            }
+                            this.match(this.man2[i], this.girl2[j]);
+                            this.man2[i] = "";
+                            this.girl2[j] = "";
+                        }
+                    }
+                }
+                var i = 0, j = 0;
+                this.man2.map((dataMan) => {
+                    if(dataMan) {
+                        this.man1[i] = dataMan;
+                        i++;
+                    }
+                })
+                this.girl2.map((dataGirl) => {
+                    if(dataGirl) {
+                        this.girl1[j] = dataGirl;
+                    }
+                });
+                this.man2 = [];
+                this.girl2 = [];
+                this.flag = 0;
             }
-            var i = 0, j = 0;
-            this.man2.map((dataMan) => {
-                if(dataMan) {
-                    this.man1[i] = dataMan;
-                    i++;
-                }
-            })
-            this.girl2.map((dataGirl) => {
-                if(dataGirl) {
-                    this.girl1[j] = dataGirl;
-                }
-            });
-            this.man2 = [];
-            this.girl2 = [];
-            this.flag = 0;
         }
     }
     startInterval() {
@@ -188,23 +238,25 @@ class People {
         }
     }
     match(man, girl) {
-        if(this.matched[man]) {
-            this.matched[man].insertNode(this.matched[man].tree, girl);
-        } else {
-            this.matched[man] = new AVLTree();
-            this.matched[man].createTree([girl]);
+        if(this.status !== 2) {
+            if(this.matched[man]) {
+                this.matched[man].insertNode(this.matched[man].tree, girl);
+            } else {
+                this.matched[man] = new AVLTree();
+                this.matched[man].createTree([girl]);
+            }
         }
         if(this.status === 0) {
             matchList[man] = {
                 user: girl,
                 changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 12 * 60 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
                 canChange: false
             }
             matchList[girl] = {
                 user: man,
                 changeTime: Date.now() + 3 * 60 * 1000,
-                endTime: Date.now() + 12 * 60 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
                 canChange: false
             }
             if(!this.matchedTimes[man]) {
@@ -217,29 +269,45 @@ class People {
             } else {
                 this.matchedTimes[girl]++;
             }
-        } else {
+            send(man, "匹配成功, 现在可以开始聊天了");
+            send(girl, "匹配成功, 现在可以开始聊天了");
+        } else if(this.status == 1) {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 20 * 60 * 1000
+                endTime: Date.now() + 8 * 60 * 1000
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 20 * 60 * 1000
+                endTime: Date.now() + 8 * 60 * 1000
             }
+            send(man, "匹配成功, 现在可以开始聊天了");
+            send(girl, "匹配成功, 现在可以开始聊天了");
+        } else {
+            matchList[man] = {
+                user: girl,
+                endTime: Date.now() + 8 * 60 * 1000,
+                isTourist: 1
+            }
+            matchList[girl] = {
+                user: man,
+                endTime: Date.now() + 8 * 60 * 1000,
+                isTourist: 1
+            }
+            send(man, "匹配成功, 现在可以开始聊天了, 对方为游客, 身份不明");
+            send(girl, "匹配成功, 现在可以开始聊天了, 对方为游客, 身份不明");
         }
         delete waitList[man];
         delete waitList[girl];
-        send(man, "匹配成功, 现在可以开始聊天了");
-        send(girl, "匹配成功, 现在可以开始聊天了");
     }
 }
     // upload =
 
 getToken();
 
-var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = {};
+var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = {}, touristList = new People(2);
 global.setInterval(check, 10000);
 people.startInterval();
+touristList.startInterval();
 
 function getToken() {
 	var option = {
@@ -401,8 +469,11 @@ app.post('/token', urlencodedParser, (req, res) => {
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
-                    send(askp[result.FromUserName[0]], '对方想向您索要联系方式,点击下方同意或者不同意按钮给予回复');
-                    recep[askp[result.FromUserName[0]]] = result.FromUserName[0];
+                    send(askp[result.FromUserName[0].user], '对方想向您索要联系方式,请在1分钟内点击下方同意或者不同意按钮给予回复');
+                    recep[askp[result.FromUserName[0]].user] = {
+                        user: result.FromUserName[0],
+                        endTime: Date.now() + 1000 * 60
+                    }
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送您的请求']);
                     delete askp[result.FromUserName[0]];
                     res.send(xml);
@@ -596,7 +667,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             console.log(err);
                             return;
                         }
-                        if(!res1.length || res1[0].allow == "0") {
+                        if(!res1.length) {
                             var msg = {
                                 xml: {
                                     ToUserName: result.FromUserName,
@@ -608,6 +679,16 @@ app.post('/token', urlencodedParser, (req, res) => {
                             }
                             var xml = builder.buildObject(msg);
                             res.send(xml);
+                        } else if(res1[0].allow == 0) {
+                            if(res1[0].matchedTimes == 0) {
+                                var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您为游客身份,正在为您匹配中......'])
+                                touristList.insertPeople(result.FromUserName[0]);
+                                waitList[result.FromUserName[0]] = 1;
+                                res.send(xml);
+                            } else {
+                                var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您已匹配过,若想继续匹配请先注册'])
+                                res.send(xml);
+                            }
                         } else {
                             if(!res1[0].activity && people.matchedTimes[result.FromUserName[0]] && people.matchedTimes[result.FromUserName[0]] > people.limit) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
@@ -698,7 +779,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 if(result.EventKey[0] === 'agree') {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
-                        var ask = recep[result.FromUserName[0]];
+                        var ask = recep[result.FromUserName[0]].user;
                         var querySel = "select contact from user where weichatNum = '" + rece + "'";
                         connection.query(querySel, (err, res1) => {
                             if(err) {
@@ -722,7 +803,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                 if(result.EventKey[0] === 'disagree') {
                     if(recep[result.FromUserName[0]]) {
                         var rece = result.FromUserName[0];
-                        var ask = recep[result.FromUserName[0]];
+                        var ask = recep[result.FromUserName[0]].user;
                         console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
                         send(ask, '对方不同意您的请求');
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
@@ -734,6 +815,36 @@ app.post('/token', urlencodedParser, (req, res) => {
                         res.send(xml);
                         return ;
                     }
+                }
+                if(result.EventKey[0] === 'set') {
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['该功能暂时未开放,敬请期待']);
+                    res.send(xml);
+                    return ;
+                }
+                if(result.EventKey[0] === 'subscribe') {
+                    var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
+                    connection.query(querySel, (err, res1) => {
+                        if(err) {
+                            console.log(err);
+                            res.send('0');
+                            return;
+                        }
+                        if(!res1.length) {
+                            var querySel = "insert into user (weichatNum, allow, matchedTimes) values ('" + result.FromUserName[0] + "', 0, 0)";
+                            connection.query(querySel, (err, res2) => {
+                                if(err) {
+                                    console.log(err);
+                                    res.send('0');
+                                    return;
+                                }
+                            })
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['欢迎关注最最,您未注册,为游客身份,有一次免费匹配的机会']);
+                            res.send(xml)
+                        } else {
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['欢迎关注最最']);
+                            res.send(xml)
+                        }
+                    })
                 }
             }
         })
@@ -914,10 +1025,6 @@ app.post("/actenroll", (req, res) => {
 app.get('/reg', (req, res) => {
     res.render('success');
 });
-
-// app.get('/upload', (req, res) => {
-//     res.render('upload')
-// })
 
 app.get('/success', (req, res) => {
     res.render('success')
@@ -1174,7 +1281,7 @@ function send(to, msg, type) {
                     "touser": to,
                     "msgtype": "image",
                     "image": {
-                        "media_id": msg
+                        "media_id": msg,
                     }
                 }
             }
@@ -1260,43 +1367,73 @@ function sendMS(num, phoneNum) {
 
 function check() {
     for(var i in matchList) {
+        if(matchList[i].isTourist) {
+            if(matchList[i].endTime < Date.now()) {
+                console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' tourist!!!");
+                var querySel = "update user set matchedTimes = 1 where weichatNum = '" + i + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    send(matchList[i].user, '聊天时间结束')
+                    delete matchList[i]
+                })
+            }
+        }
         if(matchList[i].changeTime) {
             if(matchList[i].changeTime < Date.now()) {
                 matchList[i].canChange = true;
             }
             if(matchList[i].endTime < Date.now()) {
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' ");
-                send(matchList[i].user, '聊天时间结束, 回复"1"可向对方索要联系方式')
-                askp[i] = matchList[i].user;
+                send(matchList[i].user, '聊天时间结束, 在1分钟内回复"1"可向对方索要联系方式')
+                askp[i] = {
+                    user: matchList[i].user,
+                    endTime: Date.now() + 1000 * 60
+                };
                 delete matchList[i]
             }
         } else {
             if(matchList[i].endTime < Date.now()) {
-                // var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
-                // connection.query(querySel, (err, res1) => {
-                //     if(err) {
-                //         console.log(err);
-                //         return;
-                //     }
-                //     if(res1[0]) {
-                //         res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
-                //     } else {
-                //         res1 = JSON.stringify([matchList[i]]);
-                //     }
-                //     var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
-                //     connection.query(querySel, (err, res2) => {
-                //         if(err) {
-                //             console.log(err)
-                //             return;
-                //         }
+                var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        return;
+                    }
+                    if(res1[0]) {
+                        res1 = JSON.stringify(JSON.parse(res1[0]).push(matchList[i]));
+                    } else {
+                        res1 = JSON.stringify([matchList[i]]);
+                    }
+                    var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
+                    connection.query(querySel, (err, res2) => {
+                        if(err) {
+                            console.log(err)
+                            return;
+                        }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
-                        send(matchList[i].user, '聊天时间结束, 回复"1"可向对方索要联系方式')
+                        send(matchList[i].user, '聊天时间结束, 在1分钟内回复"1"可向对方索要联系方式')
                         askp[i] = matchList[i].user;
+                        askp[i] = {
+                            user: matchList[i].user,
+                            endTime: Date.now() + 1000 * 60
+                        };
                         delete matchList[i]
-                    // })
-                // })
-
+                    })
+                })
             }
+        }
+    }
+    for(var i in askp) {
+        if(askp.endTime < Date.now()) {
+            delete askp[i]
+        }
+    }
+    for(var i in recep) {
+        if(recep.endTime < Date.now()) {
+            delete recep[i]
         }
     }
 }
