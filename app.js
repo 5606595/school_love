@@ -61,7 +61,7 @@ var upload2 = multer({
     }
 })
 
-var askp = {}, recep = {}, matchList = {}, waitList = {};
+var askp = {}, recep = {}, matchList = {}, waitList = {}, cpwait = {}, cpList = {};
 
 app.use(session({
     secret: 'zuizui-lianyi',
@@ -81,7 +81,7 @@ var connection = mysql.createConnection({
 })
 app.set('view engine', 'ejs');
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static('/home/ubuntu/zuizui/zuizui/www'));
 
 app.use(bodyParser());
 
@@ -306,6 +306,7 @@ getToken();
 
 var peopleNum = 0, peopleAll = {}, waitVerify = {}, people = new People(0), spe = {}, touristList = new People(2);
 global.setInterval(check, 10000);
+global.setInterval(cpCheck, 600000);
 people.startInterval();
 touristList.startInterval();
 
@@ -485,6 +486,12 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send('success')
                     return;
                 }
+                if(cpList[result.FromUserName[0]]) {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " -> '" + matchList[result.FromUserName[0]].user + "': " + result.Content[0] + "cp!!!");
+                    send(cpList[result.FromUserName[0]].user, result.Content[0])
+                    res.send('success')
+                    return;
+                }
                 if(waitVerify[result.FromUserName[0]]) {
                     var randomCode = result.Content[0]
                     // var querySel = "select * from user where randomCode = '" + randomCode + "'";
@@ -573,6 +580,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                     send(matchList[result.FromUserName[0]].user, result.MediaId[0], 1);
                     res.send('success');
                     return;
+                } else if(cpList[result.FromUserName[0]]) {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + cpList[result.FromUserName[0]].user + "' 发送图片  cp!!!");
+                    send(cpList[result.FromUserName[0]].user, result.MediaId[0], 1)
+                    res.send('success')
+                    return;
                 } else {
                     var msg = {
                         xml: {
@@ -593,6 +605,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + matchList[result.FromUserName[0]].user + "' 发送语音");
                     send(matchList[result.FromUserName[0]].user, result.MediaId[0], 2);
                     res.send('success');
+                    return;
+                } else if(cpList[result.FromUserName[0]]) {
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + cpList[result.FromUserName[0]].user + "'  发送语音  cp!!!");
+                    send(cpList[result.FromUserName[0]].user, result.MediaId[0], 2)
+                    res.send('success')
                     return;
                 } else {
                     var msg = {
@@ -651,6 +668,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                     }
                 }
                 if(result.EventKey[0] === 'match') {
+                    if(cpList[result.FromUserName[0]]) {
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您已有匹配对象,匹配失败']);
+                        res.send(xml);
+                        return ;
+                    }
                     if(matchList[result.FromUserName[0]]) {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您已有匹配对象,匹配失败']);
                         res.send(xml);
@@ -690,48 +712,66 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 res.send(xml);
                             }
                         } else {
-                            if(!res1[0].activity && people.matchedTimes[result.FromUserName[0]] && people.matchedTimes[result.FromUserName[0]] > people.limit) {
-                                var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
-                                res.send(xml);
-                                return ;
-                            } else {
-                                if(askp[result.FromUserName[0]]) {
-                                    delete askp[result.FromUserName[0]];
-                                }
-                                var msg = {
-                                    xml: {
-                                        ToUserName: result.FromUserName,
-                                        FromUserName: result.ToUserName,
-                                        CreateTime: [String(+new Date())],
-                                        MsgType: ['text'],
-                                        Content: ['正在为您匹配中,请稍等......']
+                            if(res1[0].islong && res1[0].cp && (res1[0].endtime > Date.now())) {
+                                if(cpwait[res1[0].weichatNum]) {
+                                    cpList[res1[0].weichatNum] = {
+                                        user: res1[0].cp,
+                                        endTime: Date.now() + 259200200
                                     }
-                                }
-                                var xml = builder.buildObject(msg);
-                                if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
-                                    if(res1[0].gender == '0') {
-                                        people.insertMan(result.FromUserName[0])
-                                        waitList[result.FromUserName[0]] = 1;
-                                    } else {
-                                        people.insertGirl(result.FromUserName[0])
-                                        waitList[result.FromUserName[0]] = 1;
+                                    cpList[res1[0].cp] = {
+                                        user: res1[0].weichatNum,
+                                        endTime: Date.now() + 259200200
                                     }
+                                    send(res1[0].weichatNum, "您的3天CP对象匹配成功, 赶紧打个招呼吧")
+                                    send(res1[0].cp, "您的3天CP对象匹配成功, 赶紧打个招呼吧")
+                                    delete cpwait[res1[0].weichatNum]
                                 } else {
-                                    var id = res1[0].activity;
-                                    if(!spe[id]) {
-                                        spe[id] = new People(1, id);
-                                        spe[id].startInterval();
-                                    }
-                                    if(res1[0].gender == '0') {
-                                        spe[id].insertMan(result.FromUserName[0])
-                                        waitList[result.FromUserName[0]] = 1;
-                                    } else {
-                                        spe[id].insertGirl(result.FromUserName[0])
-                                        waitList[result.FromUserName[0]] = 1;
-                                    }
+                                    cpwait[res1[0].cp] = res1[0].weichatNum;
                                 }
-                                res.send(xml);
-                                return ;
+                            } else {
+                                if(!res1[0].activity && people.matchedTimes[result.FromUserName[0]] && people.matchedTimes[result.FromUserName[0]] > people.limit) {
+                                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['今日匹配次数已超过上限,匹配失败']);
+                                    res.send(xml);
+                                    return ;
+                                } else {
+                                    if(askp[result.FromUserName[0]]) {
+                                        delete askp[result.FromUserName[0]];
+                                    }
+                                    var msg = {
+                                        xml: {
+                                            ToUserName: result.FromUserName,
+                                            FromUserName: result.ToUserName,
+                                            CreateTime: [String(+new Date())],
+                                            MsgType: ['text'],
+                                            Content: ['正在为您匹配中,请稍等......']
+                                        }
+                                    }
+                                    var xml = builder.buildObject(msg);
+                                    if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
+                                        if(res1[0].gender == '0') {
+                                            people.insertMan(result.FromUserName[0])
+                                            waitList[result.FromUserName[0]] = 1;
+                                        } else {
+                                            people.insertGirl(result.FromUserName[0])
+                                            waitList[result.FromUserName[0]] = 1;
+                                        }
+                                    } else {
+                                        var id = res1[0].activity;
+                                        if(!spe[id]) {
+                                            spe[id] = new People(1, id);
+                                            spe[id].startInterval();
+                                        }
+                                        if(res1[0].gender == '0') {
+                                            spe[id].insertMan(result.FromUserName[0])
+                                            waitList[result.FromUserName[0]] = 1;
+                                        } else {
+                                            spe[id].insertGirl(result.FromUserName[0])
+                                            waitList[result.FromUserName[0]] = 1;
+                                        }
+                                    }
+                                    res.send(xml);
+                                    return ;
+                                }
                             }
                         }
                     })
@@ -989,7 +1029,7 @@ app.post("/actenroll", (req, res) => {
                                         if(+new Date() >= +new Date(res2[0].deadline)) {
                                             res.send('3')
                                         } else {
-                                            var querySel1 = "insert into record(userID, userName, activityID, activityName, school) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "');";
+                                            var querySel1 = "insert into record(userID, userName, activityID, activityName, school, gender) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "', " + res1[0].gender + ");";
                                             connection.query(querySel1, (err, res3) => {
                                                 if(err) {
                                                     console.log(err);
@@ -1098,8 +1138,22 @@ app.get('/otherinfo', (req, res) => {
                         res.send('0');
                     }
                 });
+            } else if(cpList[req.session.wechatNum]) {
+                var querySel = "select * from user where weichatNum = '" + matchList[req.session.wechatNum].user + "'";
+                connection.query(querySel, (err, res1) => {
+                    if(err) {
+                        console.log(err);
+                        res.send('0');
+                        return;
+                    }
+                    if(res1[0]) {
+                        res.send(JSON.stringify(res1[0]))
+                    } else {
+                        res.send('0');
+                    }
+                });
             } else {
-                res.send('3')
+                res.send('3');
             }
         } else {
             res.send('2');
@@ -1246,6 +1300,16 @@ app.get('/wxcode', (req, res) => {
             }
             res.send('0');
         });
+    }
+})
+
+app.post('/cpsend', (req, res) => {
+    var content = req.body.content;
+    var secret = req.body.secret;
+    if(secret === "jorten5606595222") {
+        for(var i in cpList) {
+            send(cpList[i].user, content);
+        }
     }
 })
 
@@ -1415,7 +1479,6 @@ function check() {
                         }
                         console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "'  activity!!!!");
                         send(matchList[i].user, '聊天时间结束, 在1分钟内回复"1"可向对方索要联系方式')
-                        askp[i] = matchList[i].user;
                         askp[i] = {
                             user: matchList[i].user,
                             endTime: Date.now() + 1000 * 60
@@ -1427,13 +1490,35 @@ function check() {
         }
     }
     for(var i in askp) {
-        if(askp.endTime < Date.now()) {
+        if(askp[i].endTime < Date.now()) {
             delete askp[i]
         }
     }
     for(var i in recep) {
-        if(recep.endTime < Date.now()) {
+        if(recep[i].endTime < Date.now()) {
             delete recep[i]
+        }
+    }
+}
+
+function cpCheck() {
+    for(var i in cpList) {
+        if(cpList[i].endTime < Date.now()) {
+            var user = cpList[i].user
+            var querySel = "update user set islong = 0, cp = NULL where weichatNum = '" + i + "'";
+            connection.query(querySel, (err, res) => {
+                if(err) {
+                    console.log(err);
+                    return;
+                }
+                console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + user + "'  CP!!!!");
+                send(i, '您的3天CP时间已结束, 在1分钟内回复"1"可向对方索要联系方式')
+                askp[i] = {
+                    user: user,
+                    endTime: Date.now() + 1000 * 60
+                };
+                delete cpList[i]
+            })
         }
     }
 }
