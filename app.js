@@ -287,12 +287,12 @@ class People {
         } else {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 1 * 20 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
                 isTourist: 1
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 1 * 20 * 1000,
+                endTime: Date.now() + 8 * 60 * 1000,
                 isTourist: 1
             }
             send(man, "匹配成功, 现在可以开始聊天了, 对方为游客, 身份不明");
