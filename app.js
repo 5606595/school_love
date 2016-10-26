@@ -287,12 +287,12 @@ class People {
         } else {
             matchList[man] = {
                 user: girl,
-                endTime: Date.now() + 8 * 60 * 1000,
+                endTime: Date.now() + 1 * 20 * 1000,
                 isTourist: 1
             }
             matchList[girl] = {
                 user: man,
-                endTime: Date.now() + 8 * 60 * 1000,
+                endTime: Date.now() + 1 * 20 * 1000,
                 isTourist: 1
             }
             send(man, "匹配成功, 现在可以开始聊天了, 对方为游客, 身份不明");
@@ -1430,9 +1430,9 @@ function check() {
 
         if(matchList[i].isTourist) {
             if(matchList[i].endTime < Date.now()) {
-                console.log(i);
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' tourist!!!");
                 var querySel = "update user set matchedTimes = 1 where weichatNum = '" + i + "'";
+                console.log(querySel);
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err);
