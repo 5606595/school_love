@@ -861,6 +861,21 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
+                if(result.EventKey[0] === 'explain') {
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['基础功能：同城走心10分钟随机匹配（2次/天）\r定制活动：①本校、高校间或公司间的内部10分钟快速联谊 ②3天cp走心成长计划']);
+                    res.send(xml);
+                    return ;
+                }
+                if(result.EventKey[0] === 'cooperate') {
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['招募中，欢迎联系。']);
+                    res.send(xml);
+                    return ;
+                }
+                if(result.EventKey[0] === 'contact') {
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['免费发布活动/商业合作QQ：295953345\r手机：13021350518']);
+                    res.send(xml);
+                    return ;
+                }
                 if(result.EventKey[0] === 'subscribe') {
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
