@@ -863,7 +863,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     connection.query(querySel, (err, res1) => {
                         if(err) {
                             console.log(err);
-                            res.send('0');
+                            res.send('success');
                             return;
                         }
                         if(!res1.length) {
@@ -871,7 +871,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             connection.query(querySel, (err, res2) => {
                                 if(err) {
                                     console.log(err);
-                                    res.send('0');
+                                    res.send('success');
                                     return;
                                 }
                             })
