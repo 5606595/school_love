@@ -363,39 +363,15 @@ app.get('/create', (req, res) => {
                  },
                  {
                      "type": "click",
-                     "name": "同意",
-                     "key": "agree"
-                 },
-                 {
-                     "type": "click",
-                     "name": "不同意",
-                     "key": "disagree"
-                 }
-                ]
-             },
-             {
-                 "name": "近期活动",
-                 "sub_button": [
-                 {
-                     "type": "view",
-                     "name": "加入活动",
-                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
-                 },
-                 {
-                     "type": "click",
                      "name": "话题卡",
                      "key": "card"
                  },
-                 {
-                     "type": "click",
-                     "name": "匹配设置",
-                     "key": "set"
-                 },
-                 {
-                     "type": "view",
-                     "name": "个人设置",
-                     "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/personal&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
-                 }]
+                ]
+             },
+             {
+                 "type": "view",
+                 "name": "加入活动",
+                 "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/activity&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
              },
              {
                  "name": "其他",
@@ -406,9 +382,9 @@ app.get('/create', (req, res) => {
                          "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/regist&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                      },
                      {
-                         "type": "click",
-                         "name": "验证",
-                         "key": "verify"
+                         "type": "view",
+                         "name": "个人设置",
+                         "url": "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx78c23473ba07e598&redirect_uri=http://www.campuslinker.com/weixin/personal&response_type=code&scope=snsapi_base&state=123#wechat_redirect"
                      },
                      {
                          "type": "click",
@@ -1451,7 +1427,7 @@ function sendMS(num, phoneNum) {
 
 function check() {
     for(var i in matchList) {
-        console.log(matchList[i]);
+
         if(matchList[i].isTourist) {
             if(matchList[i].endTime < Date.now()) {
                 console.log(i);
@@ -1463,10 +1439,12 @@ function check() {
                         return;
                     }
                     send(matchList[i].user, '聊天时间结束')
+                    console.log(matchList[i]);
                     delete matchList[i]
+                    console.log(123);
                 })
             }
-            console.log(123);
+
         } else if(matchList[i].changeTime) {
             if(matchList[i].changeTime < Date.now()) {
                 matchList[i].canChange = true;
