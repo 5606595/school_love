@@ -854,6 +854,9 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
+                console.log(result)
+                console.log(result.Event)
+                console.log(result.Event[0]);
                 if(result.Event[0] === 'subscribe') {
                     console.log(result);
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
