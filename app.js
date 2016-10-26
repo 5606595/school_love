@@ -445,6 +445,7 @@ app.post('/token', urlencodedParser, (req, res) => {
     req.on('end', (chunk) => {
         parseString(str, (err, result) => {
             result = result.xml;
+            console.log(result);
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
@@ -680,7 +681,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                             var xml = builder.buildObject(msg);
                             res.send(xml);
                         } else if(res1[0].allow != 1) {
-                            if(res1[0].matchedTimes == 0) {
+                            if(res1[0].matchedTimes != 1) {
                                 var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您为游客身份,正在为您匹配中......'])
                                 touristList.insertPeople(result.FromUserName[0]);
                                 waitList[result.FromUserName[0]] = 1;
@@ -919,6 +920,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
         var weichatNum = req.session.wechatNum;
         if(weichatNum) {
+            console.log(req.file);
             var photo = req.file.filename;
             console.log(photo)
             var phoneNum = req.body.phoneNum;
