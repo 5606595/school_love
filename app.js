@@ -1020,7 +1020,7 @@ app.post("/actenroll", (req, res) => {
                 if(res1.length) {
                     if(!res1[0].allow) {
                         res.send('5')
-                    } else if(res1[0].activity) {
+                    } else if((res1[0].activity && res1[0].endTime > Date.now()) || (res1[0].islong && res1[0].cp)) {
                         res.send('2')
                     } else {
                         var querySel = "select * from record where userID = " + res1[0].id + " and activityID = " + actid;
