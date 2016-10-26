@@ -179,7 +179,7 @@
     container.addEventListener("touchstart", function(event) {
         if(event.target.className === "apply") {
             if(!event.target.getAttribute('disabled')) {
-                var node = event.target.parentNode.parentNode;
+                var node = event.target.parentNode;
                 var deadline = node.getElementsByClassName("deadline")[0].textContent;
                 if(+new Date() > +new Date(deadline)) {
                     alert("已超过报名截止时间,报名失败")
