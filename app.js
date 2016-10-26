@@ -1426,10 +1426,9 @@ function sendMS(num, phoneNum) {
 }
 
 function check() {
-    for(var i in matchList) {
+    for(let i in matchList) {
         if(matchList[i].isTourist) {
             if(matchList[i].endTime < Date.now()) {
-                var p = i;
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' tourist!!!");
                 var querySel = "update user set matchedTimes = 1 where weichatNum = '" + i + "'";
                 console.log(querySel);
@@ -1438,7 +1437,7 @@ function check() {
                         console.log(err);
                         return;
                     }
-                    console.log(p);
+                    console.log(i);
                     send(matchList[i].user, '聊天时间结束')
                     // delete matchList[i]
                 })
