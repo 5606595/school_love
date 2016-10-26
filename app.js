@@ -1142,7 +1142,7 @@ app.get('/otherinfo', (req, res) => {
                         res.send('0');
                         return;
                     }
-                    if(res1[0]) {
+                    if(res1[0] && res1[0].allow) {
                         res.send(JSON.stringify(res1[0]))
                     } else {
                         res.send('0');
