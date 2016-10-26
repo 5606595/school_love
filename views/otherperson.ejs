@@ -155,7 +155,7 @@
                         if(xhr.readyState === 4) {
                             if((xhr.status >= 200 && xhr.status <= 300) || xhr.status === 304) {
                                 if(xhr.responseText == '2') {
-                                    alert("您的账号为注册/通过")
+                                    alert("您的账号未注册/通过")
                                 } else if(xhr.responseText == '3') {
                                     alert("您未有匹配的对象");
                                 } else if(xhr.responseText == '0') {

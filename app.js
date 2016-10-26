@@ -122,6 +122,7 @@ class People {
             if(this.status === 2) {
                 for(var i = 0, j = this.people1.length; i < j; i += 2) {
                     if(this.people1[i] && this.people1[i + 1]) {
+                        console.log(new Date().toLocaleString() + "   '" + this.people1[i] + "'" + " matches '" + this.people1[i + 1] + "'  tourist!!!");
                         this.match(this.people1[i], this.people1[i + 1]);
                         this.people1[i] = ""
                         this.people1[i + 1] = ""
@@ -173,6 +174,7 @@ class People {
             if(this.status === 2) {
                 for(var i = 0, j = this.people2.length; i < j; i += 2) {
                     if(this.people2[i] && this.people2[i + 1]) {
+                        console.log(new Date().toLocaleString() + "   '" + this.people2[i] + "'" + " matches '" + this.people2[i + 1] + "'  tourist!!!");
                         this.match(this.people2[i], this.people2[i + 1]);
                         this.people2[i] = ""
                         this.people2[i + 1] = ""
@@ -1161,7 +1163,7 @@ app.get('/otherinfo', (req, res) => {
                         res.send('0');
                         return;
                     }
-                    if(res1[0]) {
+                    if(res1[0] && res1[0].allow) {
                         res.send(JSON.stringify(res1[0]))
                     } else {
                         res.send('0');
@@ -1451,6 +1453,7 @@ function check() {
     for(var i in matchList) {
         if(matchList[i].isTourist) {
             if(matchList[i].endTime < Date.now()) {
+                console.log(i);
                 console.log(new Date().toLocaleString() + "   '" + i + "'" + " closes '" + matchList[i].user + "' tourist!!!");
                 var querySel = "update user set matchedTimes = 1 where weichatNum = '" + i + "'";
                 connection.query(querySel, (err, res1) => {
