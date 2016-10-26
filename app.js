@@ -1310,6 +1310,9 @@ app.post('/cpsend', (req, res) => {
         for(var i in cpList) {
             send(cpList[i].user, content);
         }
+        res.send('1');
+    } else {
+        res.send('0');
     }
 })
 
