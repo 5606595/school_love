@@ -1438,10 +1438,9 @@ function check() {
                         console.log(err);
                         return;
                     }
+                    console.log(i);
                     send(matchList[i].user, '聊天时间结束')
-                    console.log(matchList[i]);
-                    delete matchList[i]
-                    console.log(123);
+                    // delete matchList[i]
                 })
             }
 
