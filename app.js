@@ -1465,6 +1465,7 @@ function check() {
                     delete matchList[i]
                 })
             }
+            console.log(123);
         } else if(matchList[i].changeTime) {
             if(matchList[i].changeTime < Date.now()) {
                 matchList[i].canChange = true;
