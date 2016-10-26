@@ -854,11 +854,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
-                console.log(result)
-                console.log(result.Event)
-                console.log(result.Event[0]);
                 if(result.Event[0] === 'subscribe') {
-                    console.log(result);
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
                         if(err) {
@@ -882,6 +878,9 @@ app.post('/token', urlencodedParser, (req, res) => {
                             res.send(xml)
                         }
                     })
+                }
+                if(result.Event[0] === 'unsubscribe') {
+                    res.send('suceess');
                 }
             }
         })
@@ -941,13 +940,26 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                 if (code && school && degree && photo) {
                     var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
                     if (reg.test(code)) {
-                        var querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
+                        var querySel = "select * from user where weichatNum = '" + weichatNum + "'";
                         connection.query(querySel, (err, res1) => {
-                            if (err) {
-                                console.log(err)
+                            if(err) {
+                                console.log(err);
+                                res.send('error');
                                 return;
                             }
-                            res.redirect('/weixin/success');
+                            var querySel;
+                            if(res1[0]) {
+                                querySel = "update user set phoneNum = '" + phoneNum + "', password = '" + code + "', Name = '" + name + "', gender = '" + gender + "', school = '" + school + "', degree = '" + degree + "', contact = '" + contact + "', photo = '" + photo + "' where weichatNum = '" + weichatNum + "'";
+                            } else {
+                                querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
+                            }
+                            connection.query(querySel, (err, res2) => {
+                                if (err) {
+                                    console.log(err)
+                                    return;
+                                }
+                                res.redirect('/weixin/success');
+                            })
                         })
                     }
                 }
