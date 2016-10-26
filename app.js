@@ -1451,6 +1451,7 @@ function sendMS(num, phoneNum) {
 
 function check() {
     for(var i in matchList) {
+        console.log(matchList[i]);
         if(matchList[i].isTourist) {
             if(matchList[i].endTime < Date.now()) {
                 console.log(i);
