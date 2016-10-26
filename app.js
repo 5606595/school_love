@@ -445,7 +445,6 @@ app.post('/token', urlencodedParser, (req, res) => {
     req.on('end', (chunk) => {
         parseString(str, (err, result) => {
             result = result.xml;
-            console.log(result);
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
@@ -855,7 +854,8 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
-                if(result.EventKey[0] === 'subscribe') {
+                if(result.Event[0] === 'subscribe') {
+                    console.log(result);
                     var querySel = "select * from user where weichatNum = '" + result.FromUserName[0] + "'";
                     connection.query(querySel, (err, res1) => {
                         if(err) {
