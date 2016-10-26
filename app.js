@@ -413,11 +413,11 @@ app.get('/create', (req, res) => {
                          "name": "联谊说明",
                          "key": "explain"
                      },
-                     {
-                         "type": "click",
-                         "name": "合作单位",
-                         "key": "cooperate"
-                     },
+                     // {
+                     //     "type": "click",
+                     //     "name": "合作单位",
+                     //     "key": "cooperate"
+                     // },
                      {
                          "type": "click",
                          "name": "联系我们",
@@ -866,11 +866,11 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
-                if(result.EventKey[0] === 'cooperate') {
-                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['招募中，欢迎联系。']);
-                    res.send(xml);
-                    return ;
-                }
+                // if(result.EventKey[0] === 'cooperate') {
+                //     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['招募中，欢迎联系。']);
+                //     res.send(xml);
+                //     return ;
+                // }
                 if(result.EventKey[0] === 'contact') {
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['免费发布活动/商业合作QQ：295953345\r手机：13021350518']);
                     res.send(xml);
