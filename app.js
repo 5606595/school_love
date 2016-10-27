@@ -705,7 +705,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                 res.send(xml);
                             }
                         } else {
-                            if(res1[0].islong && res1[0].cp && (res1[0].endtime > Date.now())) {
+                            if(res1[0].islong && res1[0].cp && (+new Date(res1[0].endtime) > Date.now())) {
                                 if(cpwait[res1[0].weichatNum]) {
                                     cpList[res1[0].weichatNum] = {
                                         user: res1[0].cp,
