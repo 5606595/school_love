@@ -715,6 +715,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                         user: res1[0].weichatNum,
                                         endTime: Date.now() + 259200200
                                     }
+                                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "' matches '" + res1[0].cp + "'   cp!!!");
                                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['连接成功，赶紧打个招呼吧！'])
                                     send(res1[0].cp, "连接成功，赶紧打个招呼吧！")
                                     delete cpwait[res1[0].weichatNum]
