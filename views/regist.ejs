@@ -178,7 +178,9 @@
             if(input.files[0].type.indexOf("image") !== -1) {
                 var reg = new RegExp(/^[\@A-Za-z0-9\!\#\$\%\^\&\*\.\~]{6,22}$/);
                 if(reg.test(document.querySelector("#code").value)) {
+                    alert(files[0].size)
                     if(files[0].size < 5 * 1000 * 1000) {
+                        alert('what?')
                         var phoneNum = document.querySelector("#phone").value;
                         var regCode = document.querySelector("#verify").value;
                         var xhr = new XMLHttpRequest();
