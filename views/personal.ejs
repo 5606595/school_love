@@ -2089,7 +2089,7 @@
             }
             function saveFun(e) {
                 if(!save.getAttribute('disabled')) {
-                    send('/persphoto', "POST", files[0], 1, function() {
+                    send('/weixin/persphoto', "POST", files[0], 1, function() {
                         var url = createObjectURL(files[0]);
                         photo.setAttribute("data-url", url);
                         extra.classList.add("downele");
