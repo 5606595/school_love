@@ -85,7 +85,6 @@ app.use(express.static('/home/ubuntu/zuizui/zuizui/www'));
 
 app.use(bodyParser());
 
-
 class People {
     constructor(status, actid) {
         if(status !== 2) {
@@ -311,6 +310,22 @@ global.setInterval(check, 10000);
 global.setInterval(cpCheck, 600000);
 people.startInterval();
 touristList.startInterval();
+var topic = [
+    "你喜欢听什么类型的音乐？谁的歌呢。",
+    "你还会继续上学吗？",
+    "最近有木有想去的地方？",
+    "给我推荐一下附近的美食吧。",
+    "平时有什么爱好么，比如音乐、运动",
+    "最近最烦的一件事是什么？",
+    "你来讲个笑话吧。",
+    "你相信有神明吗？",
+    "小时候，你希望长大后做什么？",
+    "去过天津之眼吗？",
+    "柚子和芒果最喜欢哪一个？",
+    "会不会游泳啊？",
+    "你来问一个问题吧，我肯定告诉你。",
+    "最近最让你开心的一件事是什么？"
+]
 
 function getToken() {
 	var option = {
@@ -834,6 +849,24 @@ app.post('/token', urlencodedParser, (req, res) => {
                         return ;
                     }
                 }
+                if(result.EventKey[0] === 'card') {
+                    if(matchList[result.FromUserName[0]]) {
+                        var content = topic[Math.floor(Math.random() * topic.length)]
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['话题内容为"' + content + '",已向对方发送']);
+                        send(matchList[result.FromUserName[0]].user, content);
+                        res.send(xml);
+                    } else if(cpList[result.FromUserName[0]]) {
+                        var content = topic[Math.floor(Math.random() * topic.length)]
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['话题内容为"' + content + '",已向对方发送']);
+                        send(cpList[result.FromUserName[0]].user, content);
+                        res.send(xml);
+                    } else {
+                        var content = topic[Math.floor(Math.random() * topic.length)]
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您未有匹配的对象']);
+                        res.send(xml);
+                    }
+                    return;
+                }
                 if(result.EventKey[0] === 'set') {
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['该功能暂时未开放,敬请期待']);
                     res.send(xml);
@@ -844,11 +877,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                     res.send(xml);
                     return ;
                 }
-                // if(result.EventKey[0] === 'cooperate') {
-                //     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['招募中，欢迎联系。']);
-                //     res.send(xml);
-                //     return ;
-                // }
                 if(result.EventKey[0] === 'contact') {
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['免费发布活动/商业合作QQ：295953345\r手机：13021350518']);
                     res.send(xml);
@@ -871,7 +899,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     return;
                                 }
                             })
-                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['欢迎关注最最,您未注册,为游客身份,有一次免费匹配的机会']);
+                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['欢迎关注最最，最走心的社交连接者。 请到其他模块里注册后，可随机认识本校、同城的同学或参加最走心的三天CP活动！PS:游客可试用一次且匹配对象身份不明。']);
                             res.send(xml)
                         } else {
                             var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['欢迎关注最最']);
