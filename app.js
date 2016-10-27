@@ -1045,7 +1045,7 @@ app.post("/actenroll", (req, res) => {
                     return;
                 }
                 if(res1.length) {
-                    if(!res1[0].allow) {
+                    if(!res1[0].allow || !res1[0].phoneNum) {
                         res.send('5')
                     } else if((res1[0].activity && res1[0].endTime > Date.now()) || (res1[0].islong && res1[0].cp)) {
                         res.send('2')
