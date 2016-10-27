@@ -774,7 +774,7 @@
                                         document.getElementById("wanttext").textContent = json.expect;
                                     }
                                     if(json.personalphoto) {
-                                        document.getElementById("photo").setAttribute("data-url", json.personalphoto);
+                                        document.getElementById("photo").setAttribute("data-url", "/img/person/" + json.personalphoto);
                                     }
                                     create();
                                 }
