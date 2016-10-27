@@ -186,7 +186,7 @@
                                         document.getElementById("wanttext").textContent = json.expect;
                                     }
                                     if(json.personalphoto) {
-                                        var html = "<img src='" + json.personalphoto + "' alt='图片已损坏'>"
+                                        var html = "<img src='/img/person/" + json.personalphoto + "' alt='图片已损坏'>"
                                         document.getElementById("photo").innerHTML = html;
                                     }
                                 }

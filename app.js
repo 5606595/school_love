@@ -31,7 +31,7 @@ var storage1 = multer.diskStorage({
 })
 var storage2 = multer.diskStorage({
     destination: function(req, file, callback) {
-        callback(null, __dirname + '/uploads/lifephoto')
+        callback(null, '/home/ubuntu/zuizui/zuizui/www/img/person')
     }
 })
 var upload1 = multer({
