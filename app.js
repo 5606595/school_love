@@ -480,7 +480,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                     return;
                 }
                 if(cpList[result.FromUserName[0]]) {
-                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " -> '" + matchList[result.FromUserName[0]].user + "': " + result.Content[0] + "cp!!!");
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " -> '" + cpList[result.FromUserName[0]].user + "': " + result.Content[0] + "cp!!!");
                     send(cpList[result.FromUserName[0]].user, result.Content[0])
                     res.send('success')
                     return;
@@ -715,13 +715,13 @@ app.post('/token', urlencodedParser, (req, res) => {
                                         user: res1[0].weichatNum,
                                         endTime: Date.now() + 259200200
                                     }
-                                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['您的3天CP对象匹配成功, 赶紧打个招呼吧'])
-                                    send(res1[0].cp, "您的3天CP对象匹配成功, 赶紧打个招呼吧")
+                                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['连接成功，赶紧打个招呼吧！'])
+                                    send(res1[0].cp, "连接成功，赶紧打个招呼吧！")
                                     delete cpwait[res1[0].weichatNum]
                                     res.send(xml);
                                 } else {
                                     cpwait[res1[0].cp] = res1[0].weichatNum;
-                                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['确认成功,请等待你的另一半进行确认......'])
+                                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['确认成功，请等待匹配对象确认......'])
                                     res.send(xml);
                                 }
                             } else {
