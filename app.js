@@ -1058,46 +1058,57 @@ app.post("/actenroll", (req, res) => {
                     } else if((res1[0].activity && res1[0].endTime > Date.now()) || (res1[0].islong && res1[0].cp)) {
                         res.send('2')
                     } else {
-                        var querySel = "select * from record where userID = " + res1[0].id + " and activityID = " + actid;
-                        connection.query(querySel, (err, res5) => {
+                        var querySel = "select * from record where userID = " + res1[0].id + " and allow = 0" ;
+                        connection.query(querySel, (req, res6) => {
                             if(err) {
                                 console.log(err);
                                 res.send('0')
-                                return;
                             }
-                            if(res5[0]) {
-                                res.send('6')
+                            if(res6[0]) {
+                                res.send('2');
                             } else {
-                                var querySel = "select * from activity where id = " + actid;
-                                connection.query(querySel, (err, res2) => {
+                                var querySel = "select * from record where userID = " + res1[0].id + " and activityID = " + actid;
+                                connection.query(querySel, (err, res5) => {
                                     if(err) {
                                         console.log(err);
-                                        res.send('0');
+                                        res.send('0')
                                         return;
                                     }
-                                    if(res2.length) {
-                                        if(+new Date() >= +new Date(res2[0].deadline)) {
-                                            res.send('3')
-                                        } else {
-                                            var querySel1 = "insert into record(userID, userName, activityID, activityName, school, gender) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "', " + res1[0].gender + ");";
-                                            connection.query(querySel1, (err, res3) => {
-                                                if(err) {
-                                                    console.log(err);
-                                                    res.send('0');
-                                                    return;
+                                    if(res5[0]) {
+                                        res.send('6')
+                                    } else {
+                                        var querySel = "select * from activity where id = " + actid;
+                                        connection.query(querySel, (err, res2) => {
+                                            if(err) {
+                                                console.log(err);
+                                                res.send('0');
+                                                return;
+                                            }
+                                            if(res2.length) {
+                                                if(+new Date() >= +new Date(res2[0].deadline)) {
+                                                    res.send('3')
+                                                } else {
+                                                    var querySel1 = "insert into record(userID, userName, activityID, activityName, school, gender) values(" + res1[0].id + ", '" + res1[0].Name + "', " + actid + ", '" + res2[0].title + "', '" + res1[0].school + "', " + res1[0].gender + ");";
+                                                    connection.query(querySel1, (err, res3) => {
+                                                        if(err) {
+                                                            console.log(err);
+                                                            res.send('0');
+                                                            return;
+                                                        }
+                                                        var regnum = Number(res2[0].regnum) + 1;
+                                                        var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
+                                                        connection.query(querySel2, (err, res4) => {
+                                                            if(err) {
+                                                                console.log(err);
+                                                                res.send('0');
+                                                                return;
+                                                            }
+                                                            res.send('1');
+                                                        })
+                                                    })
                                                 }
-                                                var regnum = Number(res2[0].regnum) + 1;
-                                                var querySel2 = "update activity set regnum = " + regnum + " where id = " + actid;
-                                                connection.query(querySel2, (err, res4) => {
-                                                    if(err) {
-                                                        console.log(err);
-                                                        res.send('0');
-                                                        return;
-                                                    }
-                                                    res.send('1');
-                                                })
-                                            })
-                                        }
+                                            }
+                                        })
                                     }
                                 })
                             }
