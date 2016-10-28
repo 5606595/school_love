@@ -1297,7 +1297,9 @@ app.post('/persmod', (req, res) => {
 
 app.post('/persphoto', upload2.single('file'), (req, res) => {
     if(req.headers['user-agent'].match("MicroMessenger")) {
+        console.log(req.session.wechatNum)
         if(req.session.wechatNum) {
+            console.log(req.file)
             if(req.file) {
                 console.log(req.file.filename);
                 var name = req.file.filename;
@@ -1350,7 +1352,7 @@ app.post('/cpsend', (req, res) => {
     var secret = req.body.secret;
     if(secret === "jorten5606595222") {
         for(var i in cpList) {
-            send(cpList[i].user, content);
+            send(cpList[i].user, "【小任务】:" + content);
         }
         res.send('1');
     } else {
