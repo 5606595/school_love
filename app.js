@@ -940,7 +940,10 @@ app.post('/getveri', (req, res) => {
             if (res1.length) {
                 res.send('2');
             } else {
-                var randomCode = Math.floor(Math.random() * 1000000);
+                var randomCode = "";
+                for(let i = 0; i < 6; i++) {
+                    randomCode += String(Math.floor(Math.random() * 10));
+                }
                 sendMS(String(randomCode), phoneNum);
                 req.session.phoneNum = phoneNum;
                 req.session.regCode = randomCode;
@@ -981,7 +984,12 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                             }
                             var querySel;
                             if(res1[0]) {
-                                querySel = "update user set phoneNum = '" + phoneNum + "', password = '" + code + "', Name = '" + name + "', gender = '" + gender + "', school = '" + school + "', degree = '" + degree + "', contact = '" + contact + "', valiPhoto = '" + photo + "' where weichatNum = '" + weichatNum + "'";
+                                if(!res1[0].phoneNum) {
+                                    querySel = "update user set phoneNum = '" + phoneNum + "', password = '" + code + "', Name = '" + name + "', gender = '" + gender + "', school = '" + school + "', degree = '" + degree + "', contact = '" + contact + "', valiPhoto = '" + photo + "' where weichatNum = '" + weichatNum + "'";
+                                } else {
+                                    res.send('您的微信已注册过,请勿用同一个微信注册');
+                                    return;
+                                }
                             } else {
                                 querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
                             }
