@@ -36,10 +36,10 @@ var storage2 = multer.diskStorage({
 })
 var upload1 = multer({
     storage: storage1,
-    limits: {
-        fileSize: 5 * 1000 * 1000,
-        files: 1
-    },
+    // limits: {
+        // fileSize: 5 * 1000 * 1000,
+        // files: 1
+    // },
     fileFilter: function(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
             return cb(null, false);
@@ -49,10 +49,10 @@ var upload1 = multer({
 })
 var upload2 = multer({
     storage: storage2,
-    limits: {
-        fileSize: 5 * 1000 * 1000,
-        files: 1
-    },
+    // limits: {
+        // fileSize: 5 * 1000 * 1000,
+        // files: 1
+    // },
     fileFilter: function(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
             return cb(null, false);
