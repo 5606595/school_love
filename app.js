@@ -1516,7 +1516,7 @@ function check() {
             }
         } else {
             if(matchList[i].endTime < Date.now()) {
-                var querySel = "select matchUsers from record where userID = " + i + " and allow = 1";
+                var querySel = "select matchUsers from record where (select id from user where weichatNum = '" + i + "') and allow = 1";
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err);
@@ -1527,7 +1527,7 @@ function check() {
                     } else {
                         res1 = JSON.stringify([matchList[i]]);
                     }
-                    var querySel = "update record set matchUsers = '" + res1 + "' where userID = " + i + " and allow = 1";
+                    var querySel = "update record set matchUsers = '" + res1 + "' where userID = (select id from user where weichatNum = '" + i + "') and allow = 1";
                     connection.query(querySel, (err, res2) => {
                         if(err) {
                             console.log(err)
