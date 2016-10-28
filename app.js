@@ -981,7 +981,7 @@ app.post('/reg', upload1.single('photo'), (req, res) => {
                             }
                             var querySel;
                             if(res1[0]) {
-                                querySel = "update user set phoneNum = '" + phoneNum + "', password = '" + code + "', Name = '" + name + "', gender = '" + gender + "', school = '" + school + "', degree = '" + degree + "', contact = '" + contact + "', photo = '" + photo + "' where weichatNum = '" + weichatNum + "'";
+                                querySel = "update user set phoneNum = '" + phoneNum + "', password = '" + code + "', Name = '" + name + "', gender = '" + gender + "', school = '" + school + "', degree = '" + degree + "', contact = '" + contact + "', valiPhoto = '" + photo + "' where weichatNum = '" + weichatNum + "'";
                             } else {
                                 querySel = "insert into user(phoneNum, password, Name, gender, school, degree, contact, valiPhoto, weichatNum) values('" + phoneNum + "', '" + code + "', '" + name + "', '" + gender + "', '" + school + "', '" + degree + "', '" + contact + "', '" + photo + "', '" + weichatNum + "');";
                             }
