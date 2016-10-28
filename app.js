@@ -1201,7 +1201,7 @@ app.get('/otherinfo', (req, res) => {
                     }
                 });
             } else if(cpList[req.session.wechatNum]) {
-                var querySel = "select * from user where weichatNum = '" + matchList[req.session.wechatNum].user + "'";
+                var querySel = "select * from user where weichatNum = '" + cpList[req.session.wechatNum].user + "'";
                 connection.query(querySel, (err, res1) => {
                     if(err) {
                         console.log(err);
