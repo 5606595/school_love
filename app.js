@@ -734,17 +734,18 @@ app.post('/token', urlencodedParser, (req, res) => {
                                     if(askp[result.FromUserName[0]]) {
                                         delete askp[result.FromUserName[0]];
                                     }
-                                    var msg = {
-                                        xml: {
-                                            ToUserName: result.FromUserName,
-                                            FromUserName: result.ToUserName,
-                                            CreateTime: [String(+new Date())],
-                                            MsgType: ['text'],
-                                            Content: ['正在为您匹配中,请稍等......']
-                                        }
-                                    }
+                                    var msg;
                                     var xml = builder.buildObject(msg);
                                     if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
+                                        msg = {
+                                            xml: {
+                                                ToUserName: result.FromUserName,
+                                                FromUserName: result.ToUserName,
+                                                CreateTime: [String(+new Date())],
+                                                MsgType: ['text'],
+                                                Content: ['正在为您匹配中,请稍等......']
+                                            }
+                                        }
                                         if(res1[0].gender == '0') {
                                             people.insertMan(result.FromUserName[0])
                                             waitList[result.FromUserName[0]] = 1;
@@ -753,6 +754,15 @@ app.post('/token', urlencodedParser, (req, res) => {
                                             waitList[result.FromUserName[0]] = 1;
                                         }
                                     } else {
+                                        msg = {
+                                            xml: {
+                                                ToUserName: result.FromUserName,
+                                                FromUserName: result.ToUserName,
+                                                CreateTime: [String(+new Date())],
+                                                MsgType: ['text'],
+                                                Content: ['您正在进行活动专场匹配,正在为您匹配中,请稍等......']
+                                            }
+                                        }
                                         console.log(123);
                                         var id = res1[0].activity;
                                         if(!spe[id]) {
