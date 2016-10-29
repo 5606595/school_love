@@ -462,8 +462,8 @@ app.post('/token', urlencodedParser, (req, res) => {
             result = result.xml;
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
-                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
-                    send(askp[result.FromUserName[0].user], '对方想向您索要联系方式,请在1分钟内回复"3"表示同意,回复"4"表示不同意给予回复');
+                    console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]].user + "' 索要联系方式");
+                    send(askp[result.FromUserName[0]].user, '对方想向您索要联系方式,请在1分钟内回复"3"表示同意,回复"4"表示不同意给予回复');
                     recep[askp[result.FromUserName[0]].user] = {
                         user: result.FromUserName[0],
                         endTime: Date.now() + 1000 * 60
