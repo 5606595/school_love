@@ -735,7 +735,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                                         delete askp[result.FromUserName[0]];
                                     }
                                     var msg;
-                                    var xml = builder.buildObject(msg);
                                     if(!res1[0].activity || Date.now() < +new Date(res1[0].starttime) || Date.now() > +new Date(res1[0].endtime)) {
                                         msg = {
                                             xml: {
@@ -778,6 +777,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                         }
                                         console.log(id);
                                     }
+                                    var xml = builder.buildObject(msg);
                                     res.send(xml);
                                     return ;
                                 }
