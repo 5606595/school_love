@@ -463,13 +463,41 @@ app.post('/token', urlencodedParser, (req, res) => {
             if(result.MsgType[0] === 'text') {
                 if(askp[result.FromUserName[0]] && result.Content[0] == "1") {
                     console.log(new Date().toLocaleString() + "   '" + result.FromUserName[0] + "'" + " 向 '" + askp[result.FromUserName[0]] + "' 索要联系方式");
-                    send(askp[result.FromUserName[0].user], '对方想向您索要联系方式,请在1分钟内点击下方同意或者不同意按钮给予回复');
+                    send(askp[result.FromUserName[0].user], '对方想向您索要联系方式,请在1分钟内回复"3"表示同意,回复"4"表示不同意给予回复');
                     recep[askp[result.FromUserName[0]].user] = {
                         user: result.FromUserName[0],
                         endTime: Date.now() + 1000 * 60
                     }
                     var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送您的请求']);
                     delete askp[result.FromUserName[0]];
+                    res.send(xml);
+                    return ;
+                }
+                if(recep[result.FromUserName[0]] && result.Content[0] == "3") {
+                    var rece = result.FromUserName[0];
+                    var ask = recep[result.FromUserName[0]].user;
+                    var querySel = "select contact from user where weichatNum = '" + rece + "'";
+                    connection.query(querySel, (err, res1) => {
+                        if(err) {
+                            console.log(err);
+                            return;
+                        }
+                        var contact = res1[0].contact;
+                        console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 同意给予 '" + ask + "' 联系方式" );
+                        send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
+                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                        delete recep[result.FromUserName[0]]
+                        res.send(xml);
+                        return ;
+                    })
+                }
+                if(recep[result.FromUserName[0]] && result.Content[0] == "4") {
+                    var rece = result.FromUserName[0];
+                    var ask = recep[result.FromUserName[0]].user;
+                    console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
+                    send(ask, '对方不同意您的请求');
+                    var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
+                    delete recep[result.FromUserName[0]]
                     res.send(xml);
                     return ;
                 }
@@ -821,46 +849,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                         }
                     } else {
                         var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件, 换人失败']);
-                        res.send(xml);
-                        return ;
-                    }
-                }
-                if(result.EventKey[0] === 'agree') {
-                    if(recep[result.FromUserName[0]]) {
-                        var rece = result.FromUserName[0];
-                        var ask = recep[result.FromUserName[0]].user;
-                        var querySel = "select contact from user where weichatNum = '" + rece + "'";
-                        connection.query(querySel, (err, res1) => {
-                            if(err) {
-                                console.log(err);
-                                return;
-                            }
-                            var contact = res1[0].contact;
-                            console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 同意给予 '" + ask + "' 联系方式" );
-                            send(ask, '对方同意您的请求, 他/她的预留联系方式是' + contact);
-                            var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
-                            delete recep[result.FromUserName[0]]
-                            res.send(xml);
-                            return ;
-                        })
-                    } else {
-                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件']);
-                        res.send(xml);
-                        return ;
-                    }
-                }
-                if(result.EventKey[0] === 'disagree') {
-                    if(recep[result.FromUserName[0]]) {
-                        var rece = result.FromUserName[0];
-                        var ask = recep[result.FromUserName[0]].user;
-                        console.log(new Date().toLocaleString() + "   '" + rece + "'" + " 不同意给予 '" + ask + "' 联系方式" );
-                        send(ask, '对方不同意您的请求');
-                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['已向对方发送']);
-                        delete recep[result.FromUserName[0]]
-                        res.send(xml);
-                        return ;
-                    } else {
-                        var xml = returnXML(result.FromUserName, result.ToUserName, ['text'], ['不满足条件']);
                         res.send(xml);
                         return ;
                     }
@@ -1536,6 +1524,7 @@ function check() {
                     user: matchList[i].user,
                     endTime: Date.now() + 1000 * 60
                 };
+                console.log(123);
                 delete matchList[i]
             }
         } else {
