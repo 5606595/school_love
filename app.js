@@ -753,6 +753,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                             waitList[result.FromUserName[0]] = 1;
                                         }
                                     } else {
+                                        console.log(123);
                                         var id = res1[0].activity;
                                         if(!spe[id]) {
                                             spe[id] = new People(1, id);
@@ -765,6 +766,7 @@ app.post('/token', urlencodedParser, (req, res) => {
                                             spe[id].insertGirl(result.FromUserName[0])
                                             waitList[result.FromUserName[0]] = 1;
                                         }
+                                        console.log(id);
                                     }
                                     res.send(xml);
                                     return ;
@@ -1055,7 +1057,7 @@ app.post("/actenroll", (req, res) => {
                 if(res1.length) {
                     if(!res1[0].allow || !res1[0].phoneNum) {
                         res.send('5')
-                    } else if((res1[0].activity && +new Date(res1[0].endTime) > Date.now()) || (res1[0].islong && res1[0].cp)) {
+                    } else if((res1[0].activity && +new Date(res1[0].endtime) > Date.now()) || (res1[0].islong && res1[0].cp)) {
                         res.send('2')
                     } else {
                         var querySel = "select * from record where userID = " + res1[0].id + " and allow = 0" ;
