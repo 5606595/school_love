@@ -790,7 +790,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                                                 Content: ['您正在进行活动专场匹配,正在为您匹配中,请稍等......']
                                             }
                                         }
-                                        console.log(123);
                                         var id = res1[0].activity;
                                         if(!spe[id]) {
                                             spe[id] = new People(1, id);
@@ -803,7 +802,6 @@ app.post('/token', urlencodedParser, (req, res) => {
                                             spe[id].insertGirl(result.FromUserName[0])
                                             waitList[result.FromUserName[0]] = 1;
                                         }
-                                        console.log(id);
                                     }
                                     var xml = builder.buildObject(msg);
                                     res.send(xml);
